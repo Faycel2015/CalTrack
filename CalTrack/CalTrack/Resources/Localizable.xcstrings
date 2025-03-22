@@ -4,6 +4,12 @@
     "track_your_macros" : {
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تتبع المغذيات الكبيرة اليومية"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -15,18 +21,18 @@
             "state" : "translated",
             "value" : "Suivez vos macronutriments quotidiens"
           }
-        },
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "تتبع المغذيات الكبيرة اليومية"
-          }
         }
       }
     },
     "welcome_message" : {
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مرحباً بك في CalTrack"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -37,12 +43,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bienvenue sur CalTrack"
-          }
-        },
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "مرحباً بك في CalTrack"
           }
         }
       }

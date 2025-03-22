@@ -5,19 +5,18 @@
 //  Created by FayTek on 3/20/25.
 //
 
-import Foundation
 import SwiftUI
 import SwiftData
 
 /// Enum representing different activity levels for calculating TDEE
-enum ActivityLevel: String, Codable, CaseIterable, Identifiable {
+public enum ActivityLevel: String, Codable, CaseIterable, Identifiable {
     case sedentary = "Sedentary (little or no exercise)"
     case light = "Lightly active (light exercise 1-3 days/week)"
     case moderate = "Moderately active (moderate exercise 3-5 days/week)"
     case active = "Active (hard exercise 6-7 days/week)"
     case veryActive = "Very active (very hard exercise & physical job)"
     
-    var id: String { self.rawValue }
+    public var id: String { self.rawValue }
     
     /// TDEE multiplier for this activity level
     var multiplier: Double {

@@ -5,17 +5,16 @@
 //  Created by FayTek on 3/20/25.
 //
 
-import Foundation
 import SwiftUI
 import SwiftData
 
 /// Enum representing different weight goals for nutrition planning
-enum WeightGoal: String, Codable, CaseIterable, Identifiable {
+public enum WeightGoal: String, Codable, CaseIterable, Identifiable {
     case lose = "Lose weight"
     case maintain = "Maintain weight"
     case gain = "Gain weight"
     
-    var id: String { self.rawValue }
+    public var id: String { self.rawValue }
     
     /// Calorie adjustment to apply to TDEE to achieve this goal
     var calorieAdjustment: Double {
