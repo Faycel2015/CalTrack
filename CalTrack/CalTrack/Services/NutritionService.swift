@@ -6,170 +6,313 @@
 //
 
 import Foundation
+import SwiftUI
 import SwiftData
 
-/// Repository class for handling food item data operations
-class FoodRepository {
-    private let modelContext: ModelContext
-    private let foodDatabase = FoodDatabase.shared
+/// Service class that coordinates nutrition-related operations
+class NutritionService {
+    private let userRepository: UserRepository
+    private let mealRepository: MealRepository
     
-    init(modelContext: ModelContext) {
-        self.modelContext = modelContext
+    init(userRepository: UserRepository, mealRepository: MealRepository) {
+        self.userRepository = userRepository
+        self.mealRepository = mealRepository
     }
     
-    // MARK: - CRUD Operations
+    // MARK: - Daily Nutrition Analysis
     
-    /// Save a food item to the database
-    /// - Parameter foodItem: The food item to save
-    func saveFoodItem(_ foodItem: FoodItem) throws {
-        modelContext.insert(foodItem)
-        try modelContext.save()
-    }
-    
-    /// Update an existing food item
-    /// - Parameter foodItem: The food item to update
-    func updateFoodItem(_ foodItem: FoodItem) throws {
-        try modelContext.save()
-    }
-    
-    /// Delete a food item
-    /// - Parameter foodItem: The food item to delete
-    func deleteFoodItem(_ foodItem: FoodItem) throws {
-        modelContext.delete(foodItem)
-        try modelContext.save()
-    }
-    
-    /// Get a food item by ID
-    /// - Parameter id: The ID of the food item
-    /// - Returns: The food item if found, nil otherwise
-    func getFoodItem(withID id: PersistentIdentifier) throws -> FoodItem? {
-        let descriptor = FetchDescriptor<FoodItem>(predicate: #Predicate { $0.persistentModelID == id })
-        let items = try modelContext.fetch(descriptor)
-        return items.first
-    }
-    
-    // MARK: - Food Queries
-    
-    /// Search for food items in the database
-    /// - Parameter query: The search query
-    /// - Returns: Array of matching food items
-    func searchFoodItems(_ query: String) throws -> [FoodItem] {
-        if query.isEmpty {
-            return []
+    /// Get nutrition summary for a specific date
+    /// - Parameter date: The date to analyze
+    /// - Returns: Detailed nutrition summary
+    func getNutritionSummary(for date: Date) async throws -> NutritionSummary {
+        // Get user profile for goals
+        guard let userProfile = try userRepository.getCurrentUserProfile() else {
+            throw NutritionServiceError.userProfileNotFound
         }
         
-        let lowercasedQuery = query.lowercased()
+        // Get meals for the date
+        let meals = try mealRepository.getMealsForDate(date)
         
-        // First, search custom food items in the database
-        let customPredicate = #Predicate<FoodItem> { foodItem in
-            foodItem.name.localizedStandardContains(lowercasedQuery)
+        // Calculate totals from meals
+        let (totalCalories, totalCarbs, totalProtein, totalFat) = try mealRepository.getTotalNutritionForDate(date)
+        
+        // Calculate remaining values
+        let remainingCalories = max(0, userProfile.dailyCalorieGoal - totalCalories)
+        let remainingCarbs = max(0, userProfile.carbGoalGrams - totalCarbs)
+        let remainingProtein = max(0, userProfile.proteinGoalGrams - totalProtein)
+        let remainingFat = max(0, userProfile.fatGoalGrams - totalFat)
+        
+        // Calculate percentages
+        let caloriePercentage = min(1.0, totalCalories / max(1, userProfile.dailyCalorieGoal))
+        let carbPercentage = min(1.0, totalCarbs / max(1, userProfile.carbGoalGrams))
+        let proteinPercentage = min(1.0, totalProtein / max(1, userProfile.proteinGoalGrams))
+        let fatPercentage = min(1.0, totalFat / max(1, userProfile.fatGoalGrams))
+        
+        // Calculate macro distribution (percentage of total calories)
+        let carbCalories = totalCarbs * 4
+        let proteinCalories = totalProtein * 4
+        let fatCalories = totalFat * 9
+        let totalFromMacros = carbCalories + proteinCalories + fatCalories
+        
+        let carbDistribution = totalFromMacros > 0 ? carbCalories / totalFromMacros : userProfile.carbPercentage
+        let proteinDistribution = totalFromMacros > 0 ? proteinCalories / totalFromMacros : userProfile.proteinPercentage
+        let fatDistribution = totalFromMacros > 0 ? fatCalories / totalFromMacros : userProfile.fatPercentage
+        
+        // Organize meals by type
+        var mealsByType: [MealType: [Meal]] = [:]
+        for type in MealType.allCases {
+            mealsByType[type] = meals.filter { $0.mealType == type }
         }
         
-        let descriptor = FetchDescriptor<FoodItem>(predicate: customPredicate)
-        let customResults = try modelContext.fetch(descriptor)
-        
-        // Then, search the built-in food database
-        let builtInResults = foodDatabase.searchFoods(query: query)
-        
-        // Combine the results, with custom items first
-        return customResults + builtInResults
-    }
-    
-    /// Get recent food items
-    /// - Parameter limit: Maximum number of items to return
-    /// - Returns: Array of recent food items
-    func getRecentFoodItems(limit: Int = 10) throws -> [FoodItem] {
-        let sortDescriptor = SortDescriptor<FoodItem>(\.lastUsedDate, order: .reverse)
-        var descriptor = FetchDescriptor<FoodItem>(sortBy: [sortDescriptor])
-        descriptor.predicate = #Predicate<FoodItem> { $0.lastUsedDate != nil }
-        descriptor.fetchLimit = limit
-        return try modelContext.fetch(descriptor)
-    }
-    
-    /// Get frequently used food items
-    /// - Parameter limit: Maximum number of items to return
-    /// - Returns: Array of frequently used food items
-    func getFrequentlyUsedFoodItems(limit: Int = 10) throws -> [FoodItem] {
-        let sortDescriptor = SortDescriptor<FoodItem>(\.useCount, order: .reverse)
-        var descriptor = FetchDescriptor<FoodItem>(sortBy: [sortDescriptor])
-        descriptor.fetchLimit = limit
-        return try modelContext.fetch(descriptor)
-    }
-    
-    /// Get favorite food items
-    /// - Returns: Array of favorite food items
-    func getFavoriteFoodItems() throws -> [FoodItem] {
-        let predicate = #Predicate<FoodItem> { $0.isFavorite == true }
-        let sortDescriptor = SortDescriptor<FoodItem>(\.name)
-        let descriptor = FetchDescriptor<FoodItem>(predicate: predicate, sortBy: [sortDescriptor])
-        return try modelContext.fetch(descriptor)
-    }
-    
-    /// Record usage of a food item
-    /// - Parameter foodItem: The food item to record usage for
-    func recordFoodItemUsage(_ foodItem: FoodItem) throws {
-        foodItem.recordUsage()
-        try modelContext.save()
-    }
-    
-    /// Toggle favorite status of a food item
-    /// - Parameter foodItem: The food item to toggle favorite status for
-    /// - Returns: Updated favorite status
-    func toggleFavorite(for foodItem: FoodItem) throws -> Bool {
-        foodItem.isFavorite.toggle()
-        try modelContext.save()
-        return foodItem.isFavorite
-    }
-    
-    // MARK: - Food Database Operations
-    
-    /// Get common food items from the built-in database
-    /// - Returns: Array of common food items
-    func getCommonFoodItems() -> [FoodItem] {
-        return foodDatabase.getCommonFoods()
-    }
-    
-    /// Create a custom food item
-    /// - Parameters:
-    ///   - name: Name of the food
-    ///   - servingSize: Serving size description
-    ///   - nutritionData: Tuple containing nutritional values
-    /// - Returns: The created food item
-    func createCustomFoodItem(
-        name: String,
-        servingSize: String,
-        nutritionData: (calories: Double, carbs: Double, protein: Double, fat: Double)
-    ) -> FoodItem {
-        return FoodItem(
-            name: name,
-            servingSize: servingSize,
-            servingQuantity: 1.0,
-            calories: nutritionData.calories,
-            carbs: nutritionData.carbs,
-            protein: nutritionData.protein,
-            fat: nutritionData.fat,
-            isCustom: true
+        return NutritionSummary(
+            date: date,
+            totalCalories: totalCalories,
+            totalCarbs: totalCarbs,
+            totalProtein: totalProtein,
+            totalFat: totalFat,
+            goalCalories: userProfile.dailyCalorieGoal,
+            goalCarbs: userProfile.carbGoalGrams,
+            goalProtein: userProfile.proteinGoalGrams,
+            goalFat: userProfile.fatGoalGrams,
+            remainingCalories: remainingCalories,
+            remainingCarbs: remainingCarbs,
+            remainingProtein: remainingProtein,
+            remainingFat: remainingFat,
+            caloriePercentage: caloriePercentage,
+            carbPercentage: carbPercentage,
+            proteinPercentage: proteinPercentage,
+            fatPercentage: fatPercentage,
+            carbDistribution: carbDistribution,
+            proteinDistribution: proteinDistribution,
+            fatDistribution: fatDistribution,
+            meals: meals,
+            mealsByType: mealsByType
         )
+    }
+    
+    // MARK: - Weekly Nutrition Analysis
+    
+    /// Get weekly nutrition summary
+    /// - Parameter endDate: The end date of the week (defaults to today)
+    /// - Returns: Weekly nutrition summary
+    func getWeeklyNutritionSummary(endDate: Date = Date()) async throws -> WeeklyNutritionSummary {
+        // Calculate start date (7 days before end date)
+        let startDate = Calendar.current.date(byAdding: .day, value: -6, to: endDate)!
+        
+        // Get user profile for goals
+        guard let userProfile = try userRepository.getCurrentUserProfile() else {
+            throw NutritionServiceError.userProfileNotFound
+        }
+        
+        // Get weekly totals and averages
+        let nutritionData = try mealRepository.getTotalNutritionForDateRange(
+            startDate: startDate,
+            endDate: endDate
+        )
+        
+        // Get daily summaries
+        var dailySummaries: [Date: NutritionSummary] = [:]
+        for dayOffset in 0...6 {
+            let currentDate = Calendar.current.date(byAdding: .day, value: -dayOffset, to: endDate)!
+            // Skip future dates
+            if currentDate <= Date() {
+                dailySummaries[currentDate] = try await getNutritionSummary(for: currentDate)
+            }
+        }
+        
+        // Calculate weekly goals
+        let weeklyCalorieGoal = userProfile.dailyCalorieGoal * 7
+        let weeklyCarbGoal = userProfile.carbGoalGrams * 7
+        let weeklyProteinGoal = userProfile.proteinGoalGrams * 7
+        let weeklyFatGoal = userProfile.fatGoalGrams * 7
+        
+        // Calculate weekly percentages
+        let weeklyCaloriePercentage = min(1.0, nutritionData.totalCalories / max(1, weeklyCalorieGoal))
+        let weeklyCarbPercentage = min(1.0, nutritionData.totalCarbs / max(1, weeklyCarbGoal))
+        let weeklyProteinPercentage = min(1.0, nutritionData.totalProtein / max(1, weeklyProteinGoal))
+        let weeklyFatPercentage = min(1.0, nutritionData.totalFat / max(1, weeklyFatGoal))
+        
+        return WeeklyNutritionSummary(
+            startDate: startDate,
+            endDate: endDate,
+            totalCalories: nutritionData.totalCalories,
+            totalCarbs: nutritionData.totalCarbs,
+            totalProtein: nutritionData.totalProtein,
+            totalFat: nutritionData.totalFat,
+            avgCalories: nutritionData.avgCalories,
+            avgCarbs: nutritionData.avgCarbs,
+            avgProtein: nutritionData.avgProtein,
+            avgFat: nutritionData.avgFat,
+            weeklyCalorieGoal: weeklyCalorieGoal,
+            weeklyCarbGoal: weeklyCarbGoal,
+            weeklyProteinGoal: weeklyProteinGoal,
+            weeklyFatGoal: weeklyFatGoal,
+            weeklyCaloriePercentage: weeklyCaloriePercentage,
+            weeklyCarbPercentage: weeklyCarbPercentage,
+            weeklyProteinPercentage: weeklyProteinPercentage,
+            weeklyFatPercentage: weeklyFatPercentage,
+            dailySummaries: dailySummaries
+        )
+    }
+    
+    // MARK: - Recommendations
+    
+    /// Get meal recommendations based on remaining macros
+    /// - Parameter date: The date to generate recommendations for
+    /// - Returns: Array of meal recommendations
+    func getMealRecommendations(for date: Date) async throws -> [MealRecommendation] {
+        // Get current nutrition summary
+        let summary = try await getNutritionSummary(for: date)
+        
+        // Determine which meal types haven't been logged yet
+        let missingMealTypes = MealType.allCases.filter { summary.mealsByType[$0]?.isEmpty ?? true }
+        
+        // Generate recommendations based on remaining macros and missing meal types
+        var recommendations: [MealRecommendation] = []
+        
+        // Simplified recommendation logic (in a real app, this would be more sophisticated)
+        if summary.remainingCalories > 500 && missingMealTypes.contains(.dinner) {
+            recommendations.append(
+                MealRecommendation(
+                    title: "Balanced Dinner",
+                    calories: 500,
+                    carbs: 50,
+                    protein: 30,
+                    fat: 15,
+                    mealType: .dinner,
+                    reasoning: "Provides balanced nutrition to complete your daily goals."
+                )
+            )
+        }
+        
+        if summary.remainingCalories > 200 && summary.remainingProtein > 20 && missingMealTypes.contains(.snack) {
+            recommendations.append(
+                MealRecommendation(
+                    title: "Protein Snack",
+                    calories: 200,
+                    carbs: 10,
+                    protein: 25,
+                    fat: 8,
+                    mealType: .snack,
+                    reasoning: "Helps meet your remaining protein goals."
+                )
+            )
+        }
+        
+        if summary.remainingCalories < 300 && summary.remainingCalories > 0 {
+            recommendations.append(
+                MealRecommendation(
+                    title: "Light Snack",
+                    calories: min(summary.remainingCalories, 150),
+                    carbs: min(summary.remainingCarbs, 15),
+                    protein: min(summary.remainingProtein, 10),
+                    fat: min(summary.remainingFat, 5),
+                    mealType: .snack,
+                    reasoning: "Light option to complete your daily goals without exceeding limits."
+                )
+            )
+        }
+        
+        return recommendations
     }
 }
 
-/// Errors that can occur during food item operations
-enum FoodRepositoryError: Error {
-    case foodItemNotFound
-    case saveFailed(Error)
-    case fetchFailed(Error)
-    case deleteFailed(Error)
+// MARK: - Data Models
+
+/// Detailed nutrition summary for a specific date
+struct NutritionSummary {
+    let date: Date
+    
+    // Totals
+    let totalCalories: Double
+    let totalCarbs: Double
+    let totalProtein: Double
+    let totalFat: Double
+    
+    // Goals
+    let goalCalories: Double
+    let goalCarbs: Double
+    let goalProtein: Double
+    let goalFat: Double
+    
+    // Remaining
+    let remainingCalories: Double
+    let remainingCarbs: Double
+    let remainingProtein: Double
+    let remainingFat: Double
+    
+    // Progress percentages
+    let caloriePercentage: Double
+    let carbPercentage: Double
+    let proteinPercentage: Double
+    let fatPercentage: Double
+    
+    // Macro distribution (percentage of total calories)
+    let carbDistribution: Double
+    let proteinDistribution: Double
+    let fatDistribution: Double
+    
+    // Meals
+    let meals: [Meal]
+    let mealsByType: [MealType: [Meal]]
+}
+
+/// Weekly nutrition summary
+struct WeeklyNutritionSummary {
+    let startDate: Date
+    let endDate: Date
+    
+    // Weekly totals
+    let totalCalories: Double
+    let totalCarbs: Double
+    let totalProtein: Double
+    let totalFat: Double
+    
+    // Daily averages
+    let avgCalories: Double
+    let avgCarbs: Double
+    let avgProtein: Double
+    let avgFat: Double
+    
+    // Weekly goals
+    let weeklyCalorieGoal: Double
+    let weeklyCarbGoal: Double
+    let weeklyProteinGoal: Double
+    let weeklyFatGoal: Double
+    
+    // Weekly progress percentages
+    let weeklyCaloriePercentage: Double
+    let weeklyCarbPercentage: Double
+    let weeklyProteinPercentage: Double
+    let weeklyFatPercentage: Double
+    
+    // Daily breakdowns
+    let dailySummaries: [Date: NutritionSummary]
+}
+
+/// Meal recommendation based on remaining macros
+struct MealRecommendation {
+    let title: String
+    let calories: Double
+    let carbs: Double
+    let protein: Double
+    let fat: Double
+    let mealType: MealType
+    let reasoning: String
+}
+
+// MARK: - Errors
+
+enum NutritionServiceError: Error {
+    case userProfileNotFound
+    case failedToCalculateNutrition(String)
     
     var errorDescription: String {
         switch self {
-        case .foodItemNotFound:
-            return "Food item not found"
-        case .saveFailed(let error):
-            return "Failed to save food item: \(error.localizedDescription)"
-        case .fetchFailed(let error):
-            return "Failed to fetch food items: \(error.localizedDescription)"
-        case .deleteFailed(let error):
-            return "Failed to delete food item: \(error.localizedDescription)"
+        case .userProfileNotFound:
+            return "User profile not found. Please complete your profile setup."
+        case .failedToCalculateNutrition(let reason):
+            return "Failed to calculate nutrition: \(reason)"
         }
     }
 }

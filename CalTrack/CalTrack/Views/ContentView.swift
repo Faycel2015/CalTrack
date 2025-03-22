@@ -12,6 +12,8 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var userProfiles: [UserProfile]
     
+    @State private var mainViewModel: MainViewModel?
+    
     @EnvironmentObject var appState: AppState
     
     @State private var showOnboarding = false
