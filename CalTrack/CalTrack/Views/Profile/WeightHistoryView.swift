@@ -701,62 +701,6 @@ class WeightHistoryViewModel: ObservableObject {
     }
 }
 
-// MARK: - Weight Entry Model
-
-//struct WeightEntry: Identifiable {
-//    let id = UUID()
-//    let date: Date
-//    let weight: Double
-//    
-//    var formattedDate: String {
-//        let formatter = DateFormatter()
-//        formatter.dateStyle = .medium
-//        formatter.timeStyle = .none
-//        return formatter.string(from: date)
-//    }
-//    
-//    var formattedDayOfWeek: String {
-//        let formatter = DateFormatter()
-//        formatter.dateFormat = "EEEE"
-//        return formatter.string(from: date)
-//    }
-//}
-
-// MARK: - Weight Goal Enum
-//enum WeightGoal {
-//    case lose
-//    case gain
-//    case maintain
-//}
-
-// MARK: - App Error
-//enum AppError: Identifiable {
-//    case userError(String)
-//    case systemError(String)
-//    
-//    var id: String {
-//        switch self {
-//        case .userError(let message), .systemError(let message):
-//            return message
-//        }
-//    }
-//    
-//    var message: String {
-//        switch self {
-//        case .userError(let message), .systemError(let message):
-//            return message
-//        }
-//    }
-//}
-//
-//struct WeightHistoryView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        NavigationView {
-//            WeightHistoryView()
-//        }
-//    }
-//}
-
 #Preview {
     NavigationView {
         WeightHistoryView()

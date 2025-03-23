@@ -6,11 +6,14 @@
 //
 
 import Foundation
+import SwiftUI
+import SwiftData
+import Combine
 
 /// Utility for calculating BMR (Basal Metabolic Rate) and TDEE (Total Daily Energy Expenditure)
 struct BMRCalculator {
-    
     // MARK: - Main Calculation Methods
+    public typealias Gender = UserProfile.Gender
     
     /// Calculate BMR using the Mifflin-St Jeor Equation
     /// - Parameters:

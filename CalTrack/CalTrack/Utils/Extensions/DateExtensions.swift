@@ -49,7 +49,7 @@ extension Date {
     }
     
     /// Returns start of the day
-    var startOfDay: Date {
+    var startOfDayDate: Date {
         return Calendar.current.startOfDay(for: self)
     }
     
@@ -58,7 +58,7 @@ extension Date {
         var components = DateComponents()
         components.day = 1
         components.second = -1
-        return Calendar.current.date(byAdding: components, to: startOfDay) ?? self
+        return Calendar.current.date(byAdding: components, to: self.startOfDayDate) ?? self
     }
     
     /// Formats date for nutrition tracking (e.g., "Mon, 22 Mar")

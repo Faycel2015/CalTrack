@@ -5,8 +5,10 @@
 //  Created by FayTek on 3/20/25.
 //
 
+import Foundation
 import SwiftUI
 import SwiftData
+import Combine
 
 /// Enum representing different activity levels for calculating TDEE
 public enum ActivityLevel: String, Codable, CaseIterable, Identifiable {
@@ -19,7 +21,7 @@ public enum ActivityLevel: String, Codable, CaseIterable, Identifiable {
     public var id: String { self.rawValue }
     
     /// TDEE multiplier for this activity level
-    var multiplier: Double {
+    public var multiplier: Double {
         switch self {
         case .sedentary: return 1.2
         case .light: return 1.375

@@ -5,8 +5,10 @@
 //  Created by FayTek on 3/20/25.
 //
 
+import Foundation
 import SwiftUI
 import SwiftData
+import Combine
 
 /// Enum representing different weight goals for nutrition planning
 public enum WeightGoal: String, Codable, CaseIterable, Identifiable {
@@ -17,7 +19,7 @@ public enum WeightGoal: String, Codable, CaseIterable, Identifiable {
     public var id: String { self.rawValue }
     
     /// Calorie adjustment to apply to TDEE to achieve this goal
-    var calorieAdjustment: Double {
+    public var calorieAdjustment: Double {
         switch self {
         case .lose: return -500.0  // 500 calorie deficit (approximately 1lb per week)
         case .maintain: return 0.0
@@ -35,7 +37,7 @@ public enum WeightGoal: String, Codable, CaseIterable, Identifiable {
     }
     
     /// Recommended macro distribution for this goal
-    var recommendedMacroDistribution: (carbs: Double, protein: Double, fat: Double) {
+    public var recommendedMacroDistribution: (carbs: Double, protein: Double, fat: Double) {
         switch self {
         case .lose:
             // Higher protein, moderate fat for weight loss
@@ -61,9 +63,9 @@ public enum WeightGoal: String, Codable, CaseIterable, Identifiable {
     /// Color for this goal
     var color: Color {
         switch self {
-        case .lose: return .blue
-        case .maintain: return .green
-        case .gain: return .orange
+        case .lose: return AppColors.weightLoseColor
+        case .maintain: return AppColors.weightMaintainColor
+        case .gain: return AppColors.weightGainColor
         }
     }
     

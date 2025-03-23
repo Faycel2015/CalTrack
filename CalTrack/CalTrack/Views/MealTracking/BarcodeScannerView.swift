@@ -7,23 +7,37 @@
 
 import SwiftUI
 import AVFoundation
+import SwiftData
 
 struct BarcodeScannerView: View {
     // MARK: - Properties
     
     @StateObject private var viewModel = BarcodeScannerViewModel()
     @Environment(\.presentationMode) private var presentationMode
+    @Environment(\.modelContext) private var modelContext
     
     // Callback for when a food item is successfully scanned
     var onFoodItemScanned: ((FoodItem) -> Void)?
+    
+    // MARK: - Initialization
+    
+    init(onFoodItemScanned: ((FoodItem) -> Void)? = nil) {
+        self.onFoodItemScanned = onFoodItemScanned
+        // Note: We can't use modelContext here as it needs @Environment
+    }
     
     // MARK: - Body
     
     var body: some View {
         ZStack {
             // Camera Preview
-            CameraPreviewView(barcodeService: viewModel.barcodeService)
-                .edgesIgnoringSafeArea(.all)
+            CameraPreviewView(
+                barcodeService: viewModel.barcodeService,
+                onBarcodeDetected: { barcode in
+                    viewModel.handleScannedBarcode(barcode)
+                }
+            )
+            .edgesIgnoringSafeArea(.all)
             
             // Scanner Overlay
             VStack {
@@ -48,7 +62,16 @@ struct BarcodeScannerView: View {
             ManualFoodEntryView()
         }
         .onAppear {
+            // Set model context
+            if let modelContext = modelContext as? ModelContext {
+                viewModel.modelContext = modelContext
+            }
+            // Request camera permission
             viewModel.requestCameraPermission()
+        }
+        .onDisappear {
+            // Make sure to stop scanning when view disappears
+            viewModel.stopScanning()
         }
     }
     
@@ -129,8 +152,11 @@ struct BarcodeScannerView: View {
                 .foregroundColor(.white)
             
             Button(action: {
+                // Pass the food item to the callback if provided
                 onFoodItemScanned?(foodItem)
+                // Add to meal using the view model
                 viewModel.addToMeal()
+                // Dismiss the scanner
                 presentationMode.wrappedValue.dismiss()
             }) {
                 Text("Add to Meal")
@@ -194,37 +220,6 @@ struct BarcodeScannerView: View {
             primaryButton: .default(Text("Open Settings"), action: viewModel.openSettings),
             secondaryButton: .cancel(Text("Cancel"), action: { presentationMode.wrappedValue.dismiss() })
         )
-    }
-}
-
-// Camera Preview Wrapper
-struct CameraPreviewView: UIViewRepresentable {
-    let barcodeService: BarcodeService
-    
-    func makeUIView(context: Context) -> UIView {
-        let view = UIView(frame: .zero)
-        view.backgroundColor = .black
-        
-        let setupSuccess = barcodeService.setupBarcodeScanner(in: view) { _ in
-            // Barcode handling is done in the ViewModel
-        }
-        
-        if !setupSuccess {
-            let label = UILabel()
-            label.text = "Camera unavailable"
-            label.textColor = .white
-            label.textAlignment = .center
-            label.frame = view.bounds
-            view.addSubview(label)
-        } else {
-            barcodeService.startScanning()
-        }
-        
-        return view
-    }
-    
-    func updateUIView(_ uiView: UIView, context: Context) {
-        barcodeService.updatePreviewLayerFrame(frame: uiView.bounds)
     }
 }
 

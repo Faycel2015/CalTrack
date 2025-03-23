@@ -245,19 +245,22 @@ enum MacroType: String, CaseIterable, Identifiable {
     
     var id: String { self.rawValue }
     
+    /// Color for this macro type from AppColors
     var color: Color {
         switch self {
-        case .calories: return .orange
-        case .carbs: return .blue
-        case .protein: return .green
-        case .fat: return .yellow
+        case .calories: return AppColors.caloriesColor
+        case .carbs: return AppColors.carbsColor
+        case .protein: return AppColors.proteinColor
+        case .fat: return AppColors.fatColor
         }
     }
     
+    /// Unit for displaying this macro's value
     var unit: String {
         return self == .calories ? "cal" : "g"
     }
     
+    /// System icon to represent this macro
     var systemIcon: String {
         switch self {
         case .calories: return "flame.fill"
@@ -267,6 +270,7 @@ enum MacroType: String, CaseIterable, Identifiable {
         }
     }
     
+    /// Educational description of this macro
     var description: String {
         switch self {
         case .calories:
@@ -277,6 +281,26 @@ enum MacroType: String, CaseIterable, Identifiable {
             return "Protein is essential for building and repairing tissues, including muscles. It also supports immune function and hormone production."
         case .fat:
             return "Dietary fats are vital for hormone production, nutrient absorption, and cell membrane health. They also provide energy and insulation."
+        }
+    }
+    
+    /// Calories per gram for this macro
+    var caloriesPerGram: Double {
+        switch self {
+        case .calories: return 1.0  // N/A for calories
+        case .carbs: return 4.0
+        case .protein: return 4.0
+        case .fat: return 9.0
+        }
+    }
+    
+    /// Recommended daily intake range as percentage of total calories
+    var recommendedRange: ClosedRange<Double> {
+        switch self {
+        case .calories: return 0.0...1.0  // N/A for calories
+        case .carbs: return 0.45...0.65   // 45-65% of calories from carbs
+        case .protein: return 0.10...0.35 // 10-35% of calories from protein
+        case .fat: return 0.20...0.35     // 20-35% of calories from fat
         }
     }
 }

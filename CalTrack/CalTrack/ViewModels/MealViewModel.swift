@@ -288,21 +288,21 @@ class MealViewModel {
     
     private func loadRecentAndFavoriteFoods() {
         // Load favorite foods
-        let favoritePredicate = #Predicate<FoodItem> { item in
-            item.isFavorite == true
-        }
-        
-        let favoriteDescriptor = FetchDescriptor<FoodItem>(
-            predicate: favoritePredicate,
-            sortBy: [SortDescriptor(\.lastUsedDate, order: .reverse)]
-        )
-        favoriteDescriptor.fetchLimit = 10
-        
-        // Load recent foods
-        let recentDescriptor = FetchDescriptor<FoodItem>(
-            sortBy: [SortDescriptor(\.lastUsedDate, order: .reverse)]
-        )
-        recentDescriptor.fetchLimit = 10
+          var favoritePredicate = #Predicate<FoodItem> { item in
+              item.isFavorite == true
+          }
+          
+          var favoriteDescriptor = FetchDescriptor<FoodItem>(
+              predicate: favoritePredicate,
+              sortBy: [SortDescriptor(\.lastUsedDate, order: .reverse)]
+          )
+          favoriteDescriptor.fetchLimit = 10
+          
+          // Load recent foods
+          var recentDescriptor = FetchDescriptor<FoodItem>(
+              sortBy: [SortDescriptor(\.lastUsedDate, order: .reverse)]
+          )
+          recentDescriptor.fetchLimit = 10
         
         do {
             favoriteFoods = try modelContext.fetch(favoriteDescriptor)

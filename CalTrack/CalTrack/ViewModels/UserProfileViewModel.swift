@@ -14,6 +14,7 @@ class UserProfileViewModel {
     // User profile
     private var modelContext: ModelContext
     private var profile: UserProfile?
+    public typealias Gender = UserProfile.Gender
     
     // Form input values
     var name: String = ""

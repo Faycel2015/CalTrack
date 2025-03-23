@@ -11,9 +11,9 @@ struct DateSelector: View {
     @Binding var selectedDate: Date
     var dateRange: ClosedRange<Date>?
     var onDateChanged: ((Date) -> Void)?
-    
+
     private var calendar = Calendar.current
-    
+
     var body: some View {
         VStack {
             // Date picker with visual customization
@@ -30,12 +30,12 @@ struct DateSelector: View {
                     .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
             )
             .padding()
-            
+
             // Quick date selection buttons
             quickDateButtons
         }
     }
-    
+
     private var quickDateButtons: some View {
         HStack(spacing: 15) {
             quickDateButton(title: "Today", date: Date())
@@ -44,7 +44,7 @@ struct DateSelector: View {
         }
         .padding(.horizontal)
     }
-    
+
     private func quickDateButton(title: String, date: Date) -> some View {
         Button(action: {
             withAnimation {
@@ -66,9 +66,11 @@ struct DateSelector: View {
 }
 
 #Preview {
-    static var previews: some View {
-        DateSelector(selectedDate: .constant(Date()))
-            .previewLayout(.sizeThatFits)
-            .padding()
+    struct PreviewProvider: PreviewProvider {
+        static var previews: some View {
+            DateSelector(selectedDate: .constant(Date()))
+                .previewLayout(.sizeThatFits)
+                .padding()
+        }
     }
 }

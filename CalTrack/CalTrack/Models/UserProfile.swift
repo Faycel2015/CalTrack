@@ -6,7 +6,9 @@
 //
 
 import Foundation
+import SwiftUI
 import SwiftData
+import Combine
 
 @Model
 class UserProfile {
@@ -37,6 +39,16 @@ class UserProfile {
     // Creation date
     var createdAt: Date
     var updatedAt: Date
+    
+    // Move all enum definitions here
+    public enum Gender: String, Codable, CaseIterable, Identifiable {
+        case male = "Male"
+        case female = "Female"
+        case nonBinary = "Non-binary"
+        case notSpecified = "Prefer not to say"
+        
+        public var id: String { self.rawValue }
+    }
     
     init(
         name: String = "",

@@ -14,6 +14,10 @@ class AppServices {
     
     static let shared = AppServices()
     
+    func getBarcodeService() -> BarcodeService {
+        return BarcodeService()
+    }
+    
     private init() {
         setupServices()
     }

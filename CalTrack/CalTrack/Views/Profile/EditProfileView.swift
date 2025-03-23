@@ -5,8 +5,10 @@
 //  Created by FayTek on 3/20/25.
 //
 
+import Foundation
 import SwiftUI
 import SwiftData
+import Combine
 
 struct EditProfileView: View {
     @Environment(\.dismiss) private var dismiss

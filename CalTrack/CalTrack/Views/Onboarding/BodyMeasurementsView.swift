@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import SwiftData
 
 // Step 2: Body Measurements
 private var bodyMeasurementsView: some View {
+    
     VStack(alignment: .leading, spacing: 20) {
         Text("Body Measurements")
             .font(.title2.bold())

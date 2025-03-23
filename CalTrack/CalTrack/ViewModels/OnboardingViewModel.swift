@@ -6,13 +6,15 @@
 //
 
 import Foundation
+import SwiftUI
 import SwiftData
 import Combine
 
 /// View model for the onboarding flow
 class OnboardingViewModel: ObservableObject {
-    // MARK: - Services
     
+    // MARK: - Services
+    public typealias Gender = UserProfile.Gender
     private let userRepository: UserRepository
     private let modelContext: ModelContext
     

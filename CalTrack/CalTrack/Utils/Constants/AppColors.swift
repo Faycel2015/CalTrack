@@ -14,28 +14,44 @@ public enum AppColors {
     public static let primaryBackground = Color(hex: "#F5F5F5")
     
     // MARK: - Accent Colors
-    public static let accentBlue = Color(hex: "#2196F3")
-    public static let accentRed = Color(hex: "#F44336")
+    public static let accentBlue = Color("accentBlue")
+    public static let accentRed = Color("accentRed")
     
     // MARK: - Text Colors
-    public static let primaryText = Color(hex: "#333333")
-    public static let secondaryText = Color(hex: "#666666")
+    public static let primaryText = Color("primaryText")
+    public static let secondaryText = Color("secondaryText")
     
-    // MARK: - Nutrition Category Colors
-    public static let proteinColor = Color(hex: "#FF9800")
-    public static let carbColor = Color(hex: "#2196F3")
-    public static let fatColor = Color(hex: "#9C27B0")
+    // MARK: - Macro Nutrition Colors
+    public static let caloriesColor = Color("calories-color")
+    public static let carbsColor = Color("carbs-color")
+    public static let proteinColor = Color("protein-color")
+    public static let fatColor = Color("fat-color")
+    
+    // MARK: - Meal Type Colors
+    public static let breakfastColor = Color("breakfast-color")
+    public static let lunchColor = Color("lunch-color")
+    public static let dinnerColor = Color("dinner-color")
+    public static let snackColor = Color("snack-color")
+    public static let otherMealColor = Color("other-meal-color")
+    
+    // MARK: - Weight Goal Colors
+    public static let weightLoseColor = Color("weight-lose-color")
+    public static let weightMaintainColor = Color("weight-maintain-color")
+    public static let weightGainColor = Color("weight-gain-color")
     
     // MARK: - Semantic Colors
-    public static let success = Color(hex: "#4CAF50")
-    public static let warning = Color(hex: "#FF9800")
-    public static let error = Color(hex: "#F44336")
+    public static let success = Color("success")
+    public static let warning = Color("warning")
+    public static let error = Color("error")
     
     // MARK: - Dark Mode Variants
     public enum Dark {
-        public static let primaryBackground = Color(hex: "#121212")
-        public static let secondaryBackground = Color(hex: "#1E1E1E")
+        public static let primaryBackground = Color("primaryBackground")
+        public static let secondaryBackground = Color("secondaryBackground")
     }
+    
+    // MARK: - UI Colors
+    public static let launchScreenBackground = Color("launchScreenBackground")
 }
 
 // Extension to allow hex color initialization

@@ -30,25 +30,14 @@ enum MealType: String, Codable, CaseIterable, Identifiable {
         }
     }
     
-    /// Color asset name for the meal type
-    var color: String {
+    /// Color for the meal type from AppColors
+    var color: Color {
         switch self {
-        case .breakfast: return "breakfast-color" // Define in asset catalog
-        case .lunch: return "lunch-color"
-        case .dinner: return "dinner-color"
-        case .snack: return "snack-color"
-        case .other: return "other-meal-color"
-        }
-    }
-    
-    /// SwiftUI color for the meal type (fallback if asset colors not defined)
-    var uiColor: Color {
-        switch self {
-        case .breakfast: return .blue
-        case .lunch: return .green
-        case .dinner: return .orange
-        case .snack: return .purple
-        case .other: return .gray
+        case .breakfast: return AppColors.breakfastColor
+        case .lunch: return AppColors.lunchColor
+        case .dinner: return AppColors.dinnerColor
+        case .snack: return AppColors.snackColor
+        case .other: return AppColors.otherMealColor
         }
     }
     
@@ -91,9 +80,10 @@ enum MealType: String, Codable, CaseIterable, Identifiable {
         let hour = Calendar.current.component(.hour, from: now)
         
         switch hour {
-        case 5..<11: return .breakfast
-        case 11..<15: return .lunch
-        case 17..<22: return .dinner
+        case 5..<10: return .breakfast
+        case 10..<14: return .lunch
+        case 14..<16: return .snack
+        case 16..<21: return .dinner
         default: return .snack
         }
     }
