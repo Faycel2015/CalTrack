@@ -44,9 +44,10 @@ struct MainView: View {
             }
         }
         .sheet(isPresented: $appState.showOnboarding) {
-            OnboardingView(modelContext: modelContext, onComplete: {
-                appState.completeOnboarding()
-            })
+            OnboardingView(
+                modelContext: modelContext,
+                onComplete: appState.completeOnboarding
+            )
         }
         .alert(item: $appState.globalError) { error in
             Alert(

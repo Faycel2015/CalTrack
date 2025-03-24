@@ -12,8 +12,22 @@ struct MealTrackingView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var userProfiles: [UserProfile]
     
-    @State private var viewModel: MealViewModel
+    @State var viewModel: MealViewModel
     @State private var showDatePicker = false
+    
+    // Date formatting
+    private let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        return formatter
+    }()
+    
+    private let dayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE"
+        return formatter
+    }()
     
     init(modelContext: ModelContext) {
         let vm = MealViewModel(modelContext: modelContext)
@@ -62,7 +76,7 @@ struct MealTrackingView: View {
                 AddMealView(viewModel: viewModel, isEditing: true)
             }
             .sheet(isPresented: $showDatePicker) {
-                datePicker
+                datePickerView
             }
         }
     }
@@ -108,6 +122,10 @@ struct MealTrackingView: View {
     
     private var sortedMealsByType: [MealType: [Meal]] {
         return viewModel.getMealsByType(loadedMeals)
+    }
+    
+    private var isToday: Bool {
+        return viewModel.selectedDate.isToday
     }
     
     // MARK: - View Components
@@ -156,6 +174,26 @@ struct MealTrackingView: View {
         }
         .padding()
         .background(Color(.systemBackground))
+    }
+    
+    private var datePickerView: some View {
+        NavigationView {
+            VStack {
+                DatePicker(
+                    "Select Date",
+                    selection: $viewModel.selectedDate,
+                    displayedComponents: .date
+                )
+                .datePickerStyle(GraphicalDatePickerStyle())
+                .padding()
+            }
+            .navigationBarTitle("Choose Date", displayMode: .inline)
+            .navigationBarItems(
+                trailing: Button("Done") {
+                    showDatePicker = false
+                }
+            )
+        }
     }
     
     private var emptyMealsView: some View {
@@ -215,14 +253,97 @@ struct MealTrackingView: View {
                 // Meal list by type
                 ForEach(MealType.allCases) { mealType in
                     if let meals = sortedMealsByType[mealType], !meals.isEmpty {
-                        mealSection(title: mealType.rawValue, icon: mealType.systemImage, meals: meals)
+                        mealSectionView(title: mealType.rawValue, icon: mealType.systemImage, meals: meals)
                     } else {
-                        emptyMealSection(mealType: mealType)
+                        emptyMealSectionView(mealType: mealType)
                     }
                 }
             }
             .padding(.vertical)
         }
+    }
+    
+    private func mealSectionView(title: String, icon: String, meals: [Meal]) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            // Section header
+            HStack {
+                Label(title, systemImage: icon)
+                    .font(.headline)
+                
+                Spacer()
+                
+                Button(action: {
+                    viewModel.startCreatingMeal(type: MealType(rawValue: title) ?? .other)
+                }) {
+                    Image(systemName: "plus.circle")
+                        .font(.subheadline)
+                }
+            }
+            .padding(.horizontal)
+            
+            // Meals list
+            ForEach(meals) { meal in
+                Button(action: {
+                    viewModel.startEditingMeal(meal)
+                }) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(meal.name)
+                                .font(.subheadline)
+                                .foregroundColor(.primary)
+                            
+                            Text("\(meal.foodItems.count) items")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Spacer()
+                        
+                        VStack(alignment: .trailing, spacing: 3) {
+                            Text("\(Int(meal.calories)) cal")
+                                .font(.subheadline)
+                                .foregroundColor(.primary)
+                            
+                            Text("C: \(Int(meal.carbs))g P: \(Int(meal.protein))g F: \(Int(meal.fat))g")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                    .padding(.horizontal)
+                    .background(Color(.systemBackground))
+                    .cornerRadius(8)
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
+            .padding(.horizontal)
+        }
+    }
+    
+    private func emptyMealSectionView(mealType: MealType) -> some View {
+        Button(action: {
+            viewModel.startCreatingMeal(type: mealType)
+        }) {
+            HStack {
+                Label(mealType.rawValue, systemImage: mealType.systemImage)
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                Text("Add \(mealType.rawValue)")
+                    .font(.subheadline)
+                    .foregroundColor(.accentColor)
+                
+                Image(systemName: "plus.circle")
+                    .foregroundColor(.accentColor)
+            }
+            .padding()
+            .background(Color(.systemBackground))
+            .cornerRadius(8)
+            .padding(.horizontal)
+        }
+        .buttonStyle(PlainButtonStyle())
     }
     
     private var nutritionSummaryCard: some View {
@@ -255,10 +376,21 @@ struct MealTrackingView: View {
                         .frame(width: geometry.size.width * CGFloat(calorieProgress), height: 20)
                 }
             }
+            .frame(height: 20)
+            .padding(.horizontal)
         }
+        .padding()
+        .background(Color(.systemBackground))
+        .cornerRadius(16)
+        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+        .padding(.horizontal)
     }
 }
 
 #Preview {
-    MealTrackingView()
+    // Create a ModelContext for preview
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: Meal.self, FoodItem.self, UserProfile.self, configurations: config)
+    
+    return MealTrackingView(modelContext: container.mainContext)
 }

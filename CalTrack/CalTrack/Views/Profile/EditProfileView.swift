@@ -10,6 +10,22 @@ import SwiftUI
 import SwiftData
 import Combine
 
+// Custom error type that conforms to Identifiable
+struct ProfileError: Error, Identifiable {
+    let id = UUID()
+    let message: String
+    let underlyingError: Error?
+    
+    init(message: String, underlyingError: Error? = nil) {
+        self.message = message
+        self.underlyingError = underlyingError
+    }
+    
+    var localizedDescription: String {
+        message
+    }
+}
+
 struct EditProfileView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel: EditProfileViewModel
@@ -65,7 +81,7 @@ struct EditProfileView: View {
                 }
                 .disabled(!viewModel.isProfileValid)
             )
-            .alert(item: $viewModel.error) { error in
+            .alert(item: $viewModel.profileError) { error in
                 Alert(
                     title: Text("Error"),
                     message: Text(error.localizedDescription),
@@ -86,7 +102,7 @@ struct EditProfileView: View {
                 .keyboardType(.numberPad)
             
             Picker("Gender", selection: $viewModel.gender) {
-                ForEach(Gender.allCases) { gender in
+                ForEach(UserProfile.Gender.allCases) { gender in
                     Text(gender.rawValue).tag(gender)
                 }
             }
@@ -174,7 +190,7 @@ class EditProfileViewModel: ObservableObject {
     
     @Published var name: String = ""
     @Published var age: String = ""
-    @Published var gender: Gender = .notSpecified
+    @Published var gender: UserProfile.Gender = .notSpecified
     @Published var heightCm: String = ""
     @Published var weightKg: String = ""
     @Published var activityLevel: ActivityLevel = .moderate
@@ -183,7 +199,7 @@ class EditProfileViewModel: ObservableObject {
     @Published var proteinPercentage: Double = 30
     @Published var fatPercentage: Double = 30
     
-    @Published var error: Error?
+    @Published var profileError: ProfileError?
     
     // MARK: - Computed Properties
     
@@ -255,7 +271,7 @@ class EditProfileViewModel: ObservableObject {
                 fatPercentage = existingProfile.fatPercentage * 100
             }
         } catch {
-            self.error = error
+            self.profileError = ProfileError(message: "Failed to load profile", underlyingError: error)
         }
     }
     
@@ -305,7 +321,7 @@ class EditProfileViewModel: ObservableObject {
         do {
             try modelContext.save()
         } catch {
-            self.error = error
+            self.profileError = ProfileError(message: "Failed to save profile", underlyingError: error)
         }
     }
     
@@ -317,7 +333,7 @@ class EditProfileViewModel: ObservableObject {
         do {
             try modelContext.save()
         } catch {
-            self.error = error
+            self.profileError = ProfileError(message: "Failed to delete profile", underlyingError: error)
         }
     }
 }

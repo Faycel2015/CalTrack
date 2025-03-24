@@ -354,5 +354,10 @@ struct NutritionProgressCard_Previews: PreviewProvider {
 }
 
 #Preview {
-    NutritionProgressCard()
+    NutritionProgressCard.simple(
+        calories: 1650,
+        calorieGoal: 2200
+    )
+    .padding()
+    .background(Color(.systemGray6))
 }

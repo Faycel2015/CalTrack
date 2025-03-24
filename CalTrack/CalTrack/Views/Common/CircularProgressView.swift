@@ -18,6 +18,29 @@ struct CircularProgressView: View {
     var textFont: Font = .system(size: 16, weight: .bold)
     var subTextFont: Font = .caption2
     
+    // Add a default initializer
+    init(
+        progress: Double = 0.0,
+        color: Color = .blue,
+        lineWidth: CGFloat = 10,
+        size: CGFloat = 80,
+        showText: Bool = true,
+        text: String? = nil,
+        subText: String? = nil,
+        textFont: Font = .system(size: 16, weight: .bold),
+        subTextFont: Font = .caption2
+    ) {
+        self.progress = progress
+        self.color = color
+        self.lineWidth = lineWidth
+        self.size = size
+        self.showText = showText
+        self.text = text
+        self.subText = subText
+        self.textFont = textFont
+        self.subTextFont = subTextFont
+    }
+    
     var body: some View {
         ZStack {
             // Background ring

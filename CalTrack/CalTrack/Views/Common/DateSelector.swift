@@ -11,8 +11,20 @@ struct DateSelector: View {
     @Binding var selectedDate: Date
     var dateRange: ClosedRange<Date>?
     var onDateChanged: ((Date) -> Void)?
+    var calendar: Calendar = .current
 
-    private var calendar = Calendar.current
+    // Add a public initializer
+    init(
+        selectedDate: Binding<Date>,
+        dateRange: ClosedRange<Date>? = nil,
+        onDateChanged: ((Date) -> Void)? = nil,
+        calendar: Calendar = .current
+    ) {
+        self._selectedDate = selectedDate
+        self.dateRange = dateRange
+        self.onDateChanged = onDateChanged
+        self.calendar = calendar
+    }
 
     var body: some View {
         VStack {
@@ -66,11 +78,6 @@ struct DateSelector: View {
 }
 
 #Preview {
-    struct PreviewProvider: PreviewProvider {
-        static var previews: some View {
-            DateSelector(selectedDate: .constant(Date()))
-                .previewLayout(.sizeThatFits)
-                .padding()
-        }
-    }
+    DateSelector(selectedDate: .constant(Date()))
+        .padding()
 }

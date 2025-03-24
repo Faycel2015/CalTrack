@@ -8,45 +8,55 @@
 import SwiftUI
 import SwiftData
 
-// Step 2: Body Measurements
-private var bodyMeasurementsView: some View {
+struct BodyMeasurementsView: View {
+    @Binding var heightCm: String
+    @Binding var weightKg: String
+    var heightIsValid: Bool
+    var weightIsValid: Bool
     
-    VStack(alignment: .leading, spacing: 20) {
-        Text("Body Measurements")
-            .font(.title2.bold())
-            .padding(.bottom, 5)
-        
-        VStack(alignment: .leading) {
-            Text("Height (cm)")
-                .font(.headline)
-            TextField("Enter your height in cm", text: $viewModel.heightCm)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .keyboardType(.decimalPad)
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            Text("Body Measurements")
+                .font(.title2.bold())
+                .padding(.bottom, 5)
             
-            if !viewModel.heightIsValid {
-                Text("Please enter a valid height")
-                    .font(.caption)
-                    .foregroundColor(.red)
+            VStack(alignment: .leading) {
+                Text("Height (cm)")
+                    .font(.headline)
+                TextField("Enter your height in cm", text: $heightCm)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .keyboardType(.decimalPad)
+                
+                if !heightIsValid {
+                    Text("Please enter a valid height")
+                        .font(.caption)
+                        .foregroundColor(.red)
+                }
+            }
+            
+            VStack(alignment: .leading) {
+                Text("Weight (kg)")
+                    .font(.headline)
+                TextField("Enter your weight in kg", text: $weightKg)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .keyboardType(.decimalPad)
+                
+                if !weightIsValid {
+                    Text("Please enter a valid weight")
+                        .font(.caption)
+                        .foregroundColor(.red)
+                }
             }
         }
-        
-        VStack(alignment: .leading) {
-            Text("Weight (kg)")
-                .font(.headline)
-            TextField("Enter your weight in kg", text: $viewModel.weightKg)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .keyboardType(.decimalPad)
-            
-            if !viewModel.weightIsValid {
-                Text("Please enter a valid weight")
-                    .font(.caption)
-                    .foregroundColor(.red)
-            }
-        }
+        .cardStyle()
     }
-    .cardStyle()
 }
 
 #Preview {
-    BodyMeasurementsView()
+    BodyMeasurementsView(
+        heightCm: .constant("170"),
+        weightKg: .constant("70"),
+        heightIsValid: true,
+        weightIsValid: true
+    )
 }

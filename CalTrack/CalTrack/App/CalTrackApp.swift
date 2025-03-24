@@ -21,11 +21,7 @@ struct CalTrackApp: App {
         // Configure model container for all our model entities
         do {
             modelContainer = try ModelContainer(
-                for: [
-                    UserProfile.self,
-                    Meal.self,
-                    FoodItem.self
-                ],
+                for: UserProfile.self, Meal.self, FoodItem.self,  // Remove brackets
                 configurations: ModelConfiguration(
                     isStoredInMemoryOnly: false
                 )
@@ -41,10 +37,8 @@ struct CalTrackApp: App {
         WindowGroup {
             MainView()
                 .onAppear {
-                    // Initialize app services with the model context
-                    if let modelContext = modelContainer.mainContext as? ModelContext {
-                        AppServices.shared.initialize(with: modelContext)
-                    }
+                    // Remove the unnecessary type casting
+                    AppServices.shared.initialize(with: modelContainer.mainContext)
                 }
         }
         .modelContainer(modelContainer)

@@ -6,11 +6,12 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct PersonalInfoView: View {
     @Binding var name: String
     @Binding var age: String
-    @Binding var gender: Gender
+    @Binding var gender: UserProfile.Gender
 
     var onInfoChanged: (() -> Void)?
 
@@ -35,7 +36,7 @@ struct PersonalInfoView: View {
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .autocapitalization(.words)
                     .disableAutocorrection(true)
-                    .onChange(of: name) { _ in
+                    .onChange(of: name) { oldValue, newValue in
                         onInfoChanged?()
                     }
                 if !isNameValid {
@@ -53,7 +54,7 @@ struct PersonalInfoView: View {
                 TextField("Enter your age", text: $age)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .keyboardType(.numberPad)
-                    .onChange(of: age) { _ in
+                    .onChange(of: age) { oldValue, newValue in
                         onInfoChanged?()
                     }
 
@@ -70,12 +71,12 @@ struct PersonalInfoView: View {
                     .font(.headline)
 
                 Picker("Gender", selection: $gender) {
-                    ForEach(Gender.allCases) { genderOption in
+                    ForEach(UserProfile.Gender.allCases) { genderOption in
                         Text(genderOption.rawValue).tag(genderOption)
                     }
                 }
                 .pickerStyle(SegmentedPickerStyle())
-                .onChange(of: gender) { _ in
+                .onChange(of: gender) { oldValue, newValue in
                     onInfoChanged?()
                 }
             }
@@ -111,17 +112,44 @@ struct PersonalInfoView: View {
     }
 }
 
+// Define a simple mock version of UserProfile.Gender just for the preview
+// This allows the preview to compile without needing the actual UserProfile dependency
+#if DEBUG
+enum GenderPreview: String, CaseIterable, Identifiable {
+    case male = "Male"
+    case female = "Female"
+    case nonBinary = "Non-binary"
+    case notSpecified = "Prefer not to say"
+    
+    var id: String { self.rawValue }
+}
+
+extension GenderPreview {
+    static func convert(to userProfileGender: GenderPreview) -> UserProfile.Gender {
+        switch userProfileGender {
+        case .male: return .male
+        case .female: return .female
+        case .nonBinary: return .nonBinary
+        case .notSpecified: return .notSpecified
+        }
+    }
+}
+#endif
+
 #Preview {
     struct PreviewWrapper: View {
         @State private var name = ""
         @State private var age = ""
-        @State private var gender = Gender.notSpecified
-
+        @State private var gender = GenderPreview.notSpecified
+        
         var body: some View {
             PersonalInfoView(
                 name: $name,
                 age: $age,
-                gender: $gender
+                gender: Binding<UserProfile.Gender>(
+                    get: { UserProfile.Gender.notSpecified },
+                    set: { _ in }
+                )
             )
             .padding()
         }

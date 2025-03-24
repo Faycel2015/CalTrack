@@ -10,18 +10,23 @@ import SwiftUI
 // MARK: - Macro Detail Sheet
 
 struct MacroDetailSheet: View {
+    
+    @Environment(\.dismiss) private var dismiss
     let macroType: MacroTrackingView.MacroType
     let value: Double
     let goal: Double
     let meals: [MockMeal]
     
-    @Environment(\.dismiss) private var dismiss
-    
     // Generated weekly data
     private let days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     private var weeklyValues: [Double]
     
-    init(macroType: MacroTrackingView.MacroType, value: Double, goal: Double, meals: [MockMeal]) {
+    init(
+        macroType: MacroTrackingView.MacroType = .carbs,
+        value: Double = 100,
+        goal: Double = 250,
+        meals: [MockMeal] = []
+    ) {
         self.macroType = macroType
         self.value = value
         self.goal = goal
@@ -267,6 +272,11 @@ struct MacroDetailSheet: View {
         case .protein: return meal.protein
         case .fat: return meal.fat
         }
+    }
+    
+    // Add missing helper method
+    private func getMaxValue(_ values: [Double]) -> Double {
+        return values.max() ?? 0
     }
     
     private static func createSampleData(goal: Double, currentValue: Double) -> [Double] {

@@ -12,8 +12,7 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var userProfiles: [UserProfile]
     
-    @State private var mainViewModel: MainViewModel?
-    
+    var viewModel: MainViewModel
     @EnvironmentObject var appState: AppState
     
     @State private var showOnboarding = false
@@ -57,5 +56,16 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: UserProfile.self, configurations: config)
+    
+    // Create a dummy MainViewModel for the preview
+    let viewModel = MainViewModel(
+        modelContext: container.mainContext,
+        appState: AppState()
+    )
+    
+    return ContentView(viewModel: viewModel)
+        .modelContainer(container)
+        .environmentObject(AppState())
 }

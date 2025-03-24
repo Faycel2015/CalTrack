@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct MacroCircularIndicator: View {
     // MARK: - Properties
@@ -53,6 +54,27 @@ struct MacroCircularIndicator: View {
         default:
             return [color, color.opacity(0.7)]
         }
+    }
+    
+    // Add a default initializer for preview
+    init(
+        value: Double = 0,
+        goal: Double = 100,
+        title: String = "Macro",
+        unit: String = "g",
+        color: Color = .blue,
+        lineWidth: CGFloat = 12,
+        size: CGFloat = 120,
+        showPercentage: Bool = true
+    ) {
+        self.value = value
+        self.goal = goal
+        self.title = title
+        self.unit = unit
+        self.color = color
+        self.lineWidth = lineWidth
+        self.size = size
+        self.showPercentage = showPercentage
     }
     
     // MARK: - Body
@@ -114,122 +136,99 @@ struct MacroCircularIndicator: View {
                 animatedProgress = progress
             }
         }
-        .onChange(of: value) { newValue in
+        .onChange(of: value) { oldValue, newValue in
             withAnimation(.easeOut(duration: 0.5)) {
                 animatedProgress = progress
             }
         }
-        .onChange(of: goal) { newValue in
+        .onChange(of: goal) { oldValue, newValue in
             withAnimation(.easeOut(duration: 0.5)) {
                 animatedProgress = progress
             }
         }
     }
     
-    // MARK: - Initializers
+    // MARK: - Preset Styles
+        static func carbs(value: Double, goal: Double, size: CGFloat = 120) -> MacroCircularIndicator {
+               MacroCircularIndicator(
+                   value: value,
+                   goal: goal,
+                   title: "Carbs",
+                   color: AppColors.carbsColor,
+                   size: size
+               )
+           }
+           
+           static func protein(value: Double, goal: Double, size: CGFloat = 120) -> MacroCircularIndicator {
+               MacroCircularIndicator(
+                   value: value,
+                   goal: goal,
+                   title: "Protein",
+                   color: AppColors.proteinColor,
+                   size: size
+               )
+           }
+           
+           static func fat(value: Double, goal: Double, size: CGFloat = 120) -> MacroCircularIndicator {
+               MacroCircularIndicator(
+                   value: value,
+                   goal: goal,
+                   title: "Fat",
+                   color: AppColors.fatColor,
+                   size: size
+               )
+           }
+           
+           static func calories(value: Double, goal: Double, size: CGFloat = 120) -> MacroCircularIndicator {
+               MacroCircularIndicator(
+                   value: value,
+                   goal: goal,
+                   title: "Calories",
+                   unit: "cal",
+                   color: AppColors.caloriesColor,
+                   size: size
+               )
+           }
     
-    init(
-        value: Double,
-        goal: Double,
-        title: String,
-        unit: String = "g",
-        color: Color,
-        lineWidth: CGFloat = 12,
-        size: CGFloat = 120,
-        showPercentage: Bool = true
-    ) {
-        self.value = value
-        self.goal = goal
-        self.title = title
-        self.unit = unit
-        self.color = color
-        self.lineWidth = lineWidth
-        self.size = size
-        self.showPercentage = showPercentage
-    }
-}
-
-// MARK: - Preset Styles
-
-extension MacroCircularIndicator {
-    static func carbs(value: Double, goal: Double, size: CGFloat = 120) -> MacroCircularIndicator {
-        MacroCircularIndicator(
-            value: value,
-            goal: goal,
-            title: "Carbs",
-            color: .blue,
-            size: size
-        )
-    }
-    
-    static func protein(value: Double, goal: Double, size: CGFloat = 120) -> MacroCircularIndicator {
-        MacroCircularIndicator(
-            value: value,
-            goal: goal,
-            title: "Protein",
-            color: .green,
-            size: size
-        )
-    }
-    
-    static func fat(value: Double, goal: Double, size: CGFloat = 120) -> MacroCircularIndicator {
-        MacroCircularIndicator(
-            value: value,
-            goal: goal,
-            title: "Fat",
-            color: .yellow,
-            size: size
-        )
-    }
-    
-    static func calories(value: Double, goal: Double, size: CGFloat = 120) -> MacroCircularIndicator {
-        MacroCircularIndicator(
-            value: value,
-            goal: goal,
-            title: "Calories",
-            unit: "cal",
-            color: .orange,
-            size: size
-        )
-    }
-}
-
-// Preview Provider
-struct MacroCircularIndicator_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack(spacing: 30) {
-            HStack(spacing: 20) {
-                MacroCircularIndicator.carbs(value: 182, goal: 250, size: 110)
-                MacroCircularIndicator.protein(value: 95, goal: 120, size: 110)
-                MacroCircularIndicator.fat(value: 48, goal: 65, size: 110)
+    // Preview Provider
+    struct MacroCircularIndicator_Previews: PreviewProvider {
+        static var previews: some View {
+            VStack(spacing: 30) {
+                HStack(spacing: 20) {
+                    MacroCircularIndicator.carbs(value: 182, goal: 250, size: 110)
+                    MacroCircularIndicator.protein(value: 95, goal: 120, size: 110)
+                    MacroCircularIndicator.fat(value: 48, goal: 65, size: 110)
+                }
+                
+                MacroCircularIndicator.calories(value: 1580, goal: 2000, size: 140)
+                
+                // Over goal example
+                MacroCircularIndicator(
+                    value: 72,
+                    goal: 65,
+                    title: "Fat",
+                    color: AppColors.fatColor,
+                    size: 100
+                )
+                
+                // Almost complete example
+                MacroCircularIndicator(
+                    value: 118,
+                    goal: 120,
+                    title: "Protein",
+                    color: AppColors.proteinColor,
+                    size: 100
+                )
             }
-            
-            MacroCircularIndicator.calories(value: 1580, goal: 2000, size: 140)
-            
-            // Over goal example
-            MacroCircularIndicator(
-                value: 72,
-                goal: 65,
-                title: "Fat",
-                color: .yellow,
-                size: 100
-            )
-            
-            // Almost complete example
-            MacroCircularIndicator(
-                value: 118,
-                goal: 120,
-                title: "Protein",
-                color: .green,
-                size: 100
-            )
+            .padding()
+            .background(Color(.systemBackground))
+            .previewLayout(.sizeThatFits)
         }
-        .padding()
-        .background(Color(.systemBackground))
-        .previewLayout(.sizeThatFits)
     }
 }
 
 #Preview {
     MacroCircularIndicator()
+        .padding()
+        .background(Color(.systemBackground))
 }

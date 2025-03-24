@@ -16,9 +16,12 @@ struct OnboardingView: View {
     @State private var currentStep = 0
     @State private var showResults = false
     
-    init(modelContext: ModelContext) {
+    var onComplete: (() -> Void)?
+    
+    init(modelContext: ModelContext, onComplete: (() -> Void)? = nil) {
         let vm = UserProfileViewModel(modelContext: modelContext)
         _viewModel = State(initialValue: vm)
+        self.onComplete = onComplete
     }
     
     var body: some View {
@@ -60,9 +63,18 @@ struct OnboardingView: View {
                         // Content changes based on current step
                         switch currentStep {
                         case 0:
-                            personalInfoView
+                            PersonalInfoView(
+                                name: $viewModel.name,
+                                age: $viewModel.age,
+                                gender: $viewModel.gender
+                            )
                         case 1:
-                            bodyMeasurementsView
+                            BodyMeasurementsView(
+                                heightCm: $viewModel.heightCm,
+                                weightKg: $viewModel.weightKg,
+                                heightIsValid: viewModel.heightIsValid,
+                                weightIsValid: viewModel.weightIsValid
+                            )
                         case 2:
                             activityGoalsView
                         case 3:
@@ -98,6 +110,7 @@ struct OnboardingView: View {
                     if showResults {
                         Button(action: {
                             dismiss()
+                            onComplete?()
                         }) {
                             Text("Start Tracking")
                                 .font(.headline)
@@ -146,95 +159,6 @@ struct OnboardingView: View {
     }
     
     // MARK: - Step Views
-    
-    // Step 1: Personal Information
-    private var personalInfoView: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text("Personal Information")
-                .font(.title2.bold())
-                .padding(.bottom, 5)
-            
-            VStack(alignment: .leading) {
-                Text("Full Name")
-                    .font(.headline)
-                TextField("Enter your name", text: $viewModel.name)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .autocapitalization(.words)
-                    .disableAutocorrection(true)
-                
-                if !viewModel.nameIsValid {
-                    Text("Please enter a valid name")
-                        .font(.caption)
-                        .foregroundColor(.red)
-                }
-            }
-            
-            VStack(alignment: .leading) {
-                Text("Age")
-                    .font(.headline)
-                TextField("Enter your age", text: $viewModel.age)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .keyboardType(.numberPad)
-                
-                if !viewModel.ageIsValid {
-                    Text("Please enter a valid age (15-100)")
-                        .font(.caption)
-                        .foregroundColor(.red)
-                }
-            }
-            
-            VStack(alignment: .leading) {
-                Text("Gender")
-                    .font(.headline)
-                Picker("Gender", selection: $viewModel.gender) {
-                    ForEach(Gender.allCases) { gender in
-                        Text(gender.rawValue).tag(gender)
-                    }
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding(.vertical, 5)
-            }
-        }
-        .cardStyle()
-    }
-    
-    // Step 2: Body Measurements
-    private var bodyMeasurementsView: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text("Body Measurements")
-                .font(.title2.bold())
-                .padding(.bottom, 5)
-            
-            VStack(alignment: .leading) {
-                Text("Height (cm)")
-                    .font(.headline)
-                TextField("Enter your height in cm", text: $viewModel.heightCm)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .keyboardType(.decimalPad)
-                
-                if !viewModel.heightIsValid {
-                    Text("Please enter a valid height")
-                        .font(.caption)
-                        .foregroundColor(.red)
-                }
-            }
-            
-            VStack(alignment: .leading) {
-                Text("Weight (kg)")
-                    .font(.headline)
-                TextField("Enter your weight in kg", text: $viewModel.weightKg)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .keyboardType(.decimalPad)
-                
-                if !viewModel.weightIsValid {
-                    Text("Please enter a valid weight")
-                        .font(.caption)
-                        .foregroundColor(.red)
-                }
-            }
-        }
-        .cardStyle()
-    }
     
     // Step 3: Activity & Goals
     private var activityGoalsView: some View {
@@ -514,6 +438,7 @@ struct OnboardingView: View {
             // Action Button
             Button(action: {
                 dismiss()
+                onComplete?()
             }) {
                 Text("Start Tracking")
                     .font(.headline)
@@ -659,5 +584,5 @@ extension View {
 }
 
 #Preview {
-    OnboardingView()
+    OnboardingView(modelContext: try! ModelContainer(for: UserProfile.self).mainContext)
 }

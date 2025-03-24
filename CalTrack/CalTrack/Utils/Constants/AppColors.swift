@@ -46,8 +46,8 @@ public enum AppColors {
     
     // MARK: - Dark Mode Variants
     public enum Dark {
-        public static let primaryBackground = Color("primaryBackground")
-        public static let secondaryBackground = Color("secondaryBackground")
+        public static let dark = Color("dark")
+        public static let light = Color("light")
     }
     
     // MARK: - UI Colors

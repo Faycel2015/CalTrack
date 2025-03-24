@@ -12,7 +12,7 @@ import Combine
 
 struct FoodItemDetailView: View {
     @Environment(\.dismiss) private var dismiss
-    @ObservedObject var viewModel: MealViewModel
+    @State var viewModel: MealViewModel
     let foodItem: FoodItem
     
     @State private var quantity: Double
@@ -310,5 +310,23 @@ struct FoodItemDetailView: View {
 }
 
 #Preview {
-    FoodItemDetailView()
+    // Create sample food item
+    let foodItem = FoodItem(
+        name: "Apple",
+        servingSize: "1 medium (182g)",
+        servingQuantity: 1.0,
+        calories: 95,
+        carbs: 25,
+        protein: 0.5,
+        fat: 0.3
+    )
+    
+    // Create a ModelContext for preview
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: Meal.self, FoodItem.self, configurations: config)
+    
+    // Create a viewModel with the context
+    let viewModel = MealViewModel(modelContext: container.mainContext)
+    
+    return FoodItemDetailView(viewModel: viewModel, foodItem: foodItem)
 }
