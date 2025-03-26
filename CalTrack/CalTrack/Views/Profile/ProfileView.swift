@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct ProfileView: View {
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.modelContext) var modelContext // Removed private modifier
     @StateObject private var viewModel = ProfileViewModel()
     @EnvironmentObject private var appState: AppState
     
@@ -85,7 +85,7 @@ struct ProfileView: View {
         }
         .sheet(isPresented: $viewModel.showOnboarding) {
             OnboardingView(
-                modelContext: AppServices.shared.getUserRepository().modelContext,
+                modelContext: modelContext, // This now works since modelContext is not private
                 onComplete: {
                     viewModel.loadUserProfile()
                 }
@@ -178,8 +178,9 @@ struct ProfileView: View {
                 )
             }
             
-            if let bmiCategory = viewModel.bmiCategory, bmiCategory != "Unknown" {
-                Text("BMI Category: \(bmiCategory)")
+            // Fixed conditional binding issue
+            if !viewModel.bmiCategory.isEmpty && viewModel.bmiCategory != "Unknown" {
+                Text("BMI Category: \(viewModel.bmiCategory)")
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .padding(.top, 5)

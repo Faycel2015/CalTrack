@@ -134,10 +134,11 @@ struct SettingsView: View {
                     secondaryButton: .cancel()
                 )
             }
-            .alert(item: $viewModel.error) { error in
+            // And update your alert in SettingsView
+            .alert(item: $viewModel.identifiableError) { identifiableError in
                 Alert(
                     title: Text("Error"),
-                    message: Text(error.localizedDescription),
+                    message: Text(identifiableError.localizedDescription),
                     dismissButton: .default(Text("OK"))
                 )
             }
@@ -219,6 +220,7 @@ class SettingsViewModel: ObservableObject {
 
     private let modelContext: ModelContext
     private let userRepository: UserRepository
+    @Published var identifiableError: IdentifiableError?
 
     // Appearance
     @Published var useAccentColor: Bool = false
@@ -288,15 +290,17 @@ class SettingsViewModel: ObservableObject {
         }
     }
 
+    // Update your error handling methods
     func exportUserData() {
-        // Implement data export functionality
-        // This could create a JSON or CSV file with user's data
         do {
             // Example: Export user profile and tracking data
-            let profile = try userRepository.getCurrentUserProfile()
+            _ = try userRepository.getCurrentUserProfile()
             // Create export logic
         } catch {
-            self.error = error
+            // Log the error using your ErrorHandler
+            ErrorHandler.shared.handle(error, context: "Data Export")
+            // Wrap the error for display
+            self.identifiableError = IdentifiableError(error: error)
         }
     }
 
@@ -305,7 +309,10 @@ class SettingsViewModel: ObservableObject {
             try userRepository.deleteUserProfile()
             // Additional cleanup logic
         } catch {
-            self.error = error
+            // Log the error using your ErrorHandler
+            ErrorHandler.shared.handle(error, context: "Data Deletion")
+            // Wrap the error for display
+            self.identifiableError = IdentifiableError(error: error)
         }
     }
 }

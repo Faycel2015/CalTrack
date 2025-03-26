@@ -62,10 +62,8 @@ struct BarcodeScannerView: View {
             ManualFoodEntryView()
         }
         .onAppear {
-            // Set model context
-            if let modelContext = modelContext as? ModelContext {
-                viewModel.modelContext = modelContext
-            }
+            // Set model context - Fixed: removed unnecessary cast
+            viewModel.modelContext = modelContext
             // Request camera permission
             viewModel.requestCameraPermission()
         }

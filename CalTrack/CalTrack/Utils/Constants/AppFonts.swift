@@ -76,7 +76,7 @@ extension Bundle {
         
         // Preferred method for iOS 18+
         if #available(iOS 18.0, *) {
-            guard let descriptors = CTFontManagerCreateFontDescriptorsFromData(fontData) as? [CTFontDescriptor] else {
+            guard CTFontManagerCreateFontDescriptorsFromData(fontData) is [CTFontDescriptor] else {
                 print("Failed to create font descriptors")
                 return false
             }

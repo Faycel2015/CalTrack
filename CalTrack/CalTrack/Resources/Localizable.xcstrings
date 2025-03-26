@@ -1,6 +1,815 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+
+    },
+    " cal" : {
+
+    },
+    "-5%" : {
+
+    },
+    "(%lld%%)" : {
+
+    },
+    "@CalTrackApp" : {
+
+    },
+    "% of Calories" : {
+
+    },
+    "% of Total Calories" : {
+
+    },
+    "%@" : {
+
+    },
+    "%@ %lld of %lld %@, %lld percent complete" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$lld of %3$lld %4$@, %5$lld percent complete"
+          }
+        }
+      }
+    },
+    "%@ Details" : {
+
+    },
+    "%@ kg" : {
+
+    },
+    "%@ kg %@ since last entry" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ kg %2$@ since last entry"
+          }
+        }
+      }
+    },
+    "%@ serving" : {
+
+    },
+    "%@%lld cal" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@%2$lld cal"
+          }
+        }
+      }
+    },
+    "%lld" : {
+
+    },
+    "%lld %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld %2$@"
+          }
+        }
+      }
+    },
+    "%lld cal" : {
+
+    },
+    "%lld cal | C: %lldg | P: %lldg | F: %lldg" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld cal | C: %2$lldg | P: %3$lldg | F: %4$lldg"
+          }
+        }
+      }
+    },
+    "%lld items" : {
+
+    },
+    "%lld of %lld calories" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld of %2$lld calories"
+          }
+        }
+      }
+    },
+    "%lld remaining" : {
+
+    },
+    "%lld years • %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld years • %2$@"
+          }
+        }
+      }
+    },
+    "%lld/4" : {
+
+    },
+    "%lld%%" : {
+
+    },
+    "%lld%% / %lld%% / %lld%%" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld%% / %2$lld%% / %3$lld%%"
+          }
+        }
+      }
+    },
+    "%lld%% of weekly goal" : {
+
+    },
+    "%lldg" : {
+
+    },
+    "+ %lld cal" : {
+
+    },
+    "+%@" : {
+
+    },
+    "+5%" : {
+
+    },
+    "0" : {
+
+    },
+    "1.0.0" : {
+
+    },
+    "101" : {
+
+    },
+    "500 calorie deficit per day" : {
+
+    },
+    "500 calorie surplus per day" : {
+
+    },
+    "About" : {
+
+    },
+    "About CalTrack" : {
+
+    },
+    "Account" : {
+
+    },
+    "Activity & Goals" : {
+
+    },
+    "Activity Bonus" : {
+
+    },
+    "Activity Level" : {
+
+    },
+    "Add" : {
+
+    },
+    "Add %@" : {
+
+    },
+    "Add Meal" : {
+      "comment" : "Button to add a new meal"
+    },
+    "Add Meal View" : {
+
+    },
+    "Add to Favorites" : {
+
+    },
+    "Add to Meal" : {
+
+    },
+    "Add Weight Entry" : {
+
+    },
+    "Adjust your macronutrient percentages" : {
+
+    },
+    "Adjust your macronutrient percentages to match your goals" : {
+
+    },
+    "Age" : {
+
+    },
+    "Align barcode within frame" : {
+
+    },
+    "An error occurred" : {
+      "comment" : "Generic error message"
+    },
+    "App Settings" : {
+
+    },
+    "Appearance" : {
+
+    },
+    "Are you sure you want to delete all your data? This cannot be undone." : {
+
+    },
+    "Avg" : {
+
+    },
+    "Based on your information" : {
+
+    },
+    "BMI Category: %@" : {
+
+    },
+    "BMR (Base Metabolic Rate)" : {
+
+    },
+    "Body Measurements" : {
+
+    },
+    "Body Metrics" : {
+
+    },
+    "Build" : {
+
+    },
+    "Build Number" : {
+
+    },
+    "C: %lld%%" : {
+
+    },
+    "C: %lldg" : {
+
+    },
+    "C: %lldg • P: %lldg • F: %lldg" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "C: %1$lldg • P: %2$lldg • F: %3$lldg"
+          }
+        }
+      }
+    },
+    "C: %lldg P: %lldg F: %lldg" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "C: %1$lldg P: %2$lldg F: %3$lldg"
+          }
+        }
+      }
+    },
+    "cal" : {
+
+    },
+    "Calculate" : {
+
+    },
+    "Calorie Intake" : {
+
+    },
+    "calories" : {
+
+    },
+    "Calories" : {
+
+    },
+    "Calories Remaining" : {
+
+    },
+    "CalTrack" : {
+      "comment" : "The name of the application"
+    },
+    "CalTrack collects and stores the following information:" : {
+
+    },
+    "CalTrack is dedicated to helping you achieve your nutrition and fitness goals through personalized tracking and insights." : {
+
+    },
+    "CalTrack Setup" : {
+
+    },
+    "Camera Access Required" : {
+
+    },
+    "Cancel" : {
+      "comment" : "Cancellation button"
+    },
+    "Carbohydrates: %lld%%" : {
+
+    },
+    "Choose Date" : {
+
+    },
+    "Clear All Data" : {
+
+    },
+    "Contact" : {
+
+    },
+    "Create Custom Food" : {
+
+    },
+    "Create Profile" : {
+
+    },
+    "Current Total" : {
+
+    },
+    "Custom Accent Color" : {
+
+    },
+    "Daily Calorie Goal" : {
+      "comment" : "Title for daily calorie goal"
+    },
+    "Daily Calories" : {
+
+    },
+    "Daily Intake" : {
+
+    },
+    "Daily Nutrition" : {
+
+    },
+    "Daily Water Goal: %.0f ml" : {
+
+    },
+    "Dark" : {
+
+    },
+    "Dashboard" : {
+
+    },
+    "Data Collection" : {
+
+    },
+    "Data Management" : {
+
+    },
+    "Data Privacy" : {
+
+    },
+    "Data Security" : {
+
+    },
+    "Data Usage" : {
+
+    },
+    "Date" : {
+
+    },
+    "Day" : {
+
+    },
+    "Delete" : {
+
+    },
+    "Delete All Data" : {
+
+    },
+    "Delete Meal" : {
+
+    },
+    "Delete Profile" : {
+
+    },
+    "Deleting your profile will remove all your data" : {
+
+    },
+    "Done" : {
+
+    },
+    "Edit" : {
+
+    },
+    "Edit Meal" : {
+
+    },
+    "Edit Portion" : {
+
+    },
+    "Edit Profile" : {
+      "comment" : "Button to edit user profile"
+    },
+    "Email" : {
+
+    },
+    "Enter food manually" : {
+
+    },
+    "Enter weight" : {
+
+    },
+    "Enter your age" : {
+
+    },
+    "Enter your height in cm" : {
+
+    },
+    "Enter your name" : {
+
+    },
+    "Enter your weight in kg" : {
+
+    },
+    "Error" : {
+
+    },
+    "Export My Data" : {
+
+    },
+    "Export Nutrition Data" : {
+
+    },
+    "F: %lld%%" : {
+
+    },
+    "F: %lldg" : {
+
+    },
+    "Fat: %lld%%" : {
+
+    },
+    "Features" : {
+
+    },
+    "Find Food" : {
+
+    },
+    "Food Details" : {
+
+    },
+    "Food Diary" : {
+      "comment" : "Title for food tracking section"
+    },
+    "Food Name (Optional)" : {
+
+    },
+    "Full Name" : {
+
+    },
+    "Gender" : {
+
+    },
+    "Get Started" : {
+      "comment" : "Button to begin using the app"
+    },
+    "Goal" : {
+
+    },
+    "Goal Achievement" : {
+
+    },
+    "Goal Tracking" : {
+
+    },
+    "Goal: %@" : {
+
+    },
+    "Goal: %lld" : {
+
+    },
+    "Goal: %lldg" : {
+
+    },
+    "Goals & Activity" : {
+
+    },
+    "Height" : {
+      "comment" : "User's height"
+    },
+    "Height (cm)" : {
+
+    },
+    "Hello, %@" : {
+
+    },
+    "Help & Support" : {
+
+    },
+    "Help us personalize your nutrition tracking" : {
+
+    },
+    "Highest" : {
+
+    },
+    "Highest Weight" : {
+
+    },
+    "Insights" : {
+
+    },
+    "kg" : {
+
+    },
+    "Light" : {
+
+    },
+    "Loading profile..." : {
+
+    },
+    "Lowest" : {
+
+    },
+    "Lowest Weight" : {
+
+    },
+    "Macro Distribution" : {
+
+    },
+    "Macro Goal Comparison" : {
+
+    },
+    "Macro Goal Display" : {
+
+    },
+    "Macro Nutrients" : {
+
+    },
+    "Macronutrient Breakdown" : {
+
+    },
+    "Made with ❤️ by FayTek" : {
+
+    },
+    "Maintain current weight" : {
+
+    },
+    "Manual Food Entry" : {
+
+    },
+    "Meal Breakdown" : {
+
+    },
+    "Meal Type" : {
+
+    },
+    "Meal Type:" : {
+
+    },
+    "Meals" : {
+
+    },
+    "More Options" : {
+
+    },
+    "Network connection failed" : {
+      "comment" : "Network error message"
+    },
+    "Newest First" : {
+
+    },
+    "Next" : {
+
+    },
+    "No foods added yet" : {
+
+    },
+    "No meals logged for this day" : {
+
+    },
+    "No Profile Found" : {
+
+    },
+    "No results found" : {
+
+    },
+    "Nutrition" : {
+
+    },
+    "Nutrition Details" : {
+
+    },
+    "Nutrition Goals" : {
+
+    },
+    "Nutrition Info" : {
+
+    },
+    "Nutrition Information" : {
+
+    },
+    "Nutrition Summary" : {
+
+    },
+    "Nutrition Tracking" : {
+
+    },
+    "of %lld%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "of %1$lld%2$@"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "comment" : "Confirmation button"
+    },
+    "Oldest First" : {
+
+    },
+    "Open Settings" : {
+
+    },
+    "Optional Details" : {
+
+    },
+    "Our Mission" : {
+
+    },
+    "P: %lld%%" : {
+
+    },
+    "P: %lldg" : {
+
+    },
+    "Personal Information" : {
+
+    },
+    "Please allow camera access in Settings to scan barcodes." : {
+
+    },
+    "Please create a profile to track your nutrition goals" : {
+
+    },
+    "Please enter a valid age (15-100)" : {
+
+    },
+    "Please enter a valid height" : {
+
+    },
+    "Please enter a valid name" : {
+
+    },
+    "Please enter a valid weight" : {
+
+    },
+    "Previous" : {
+
+    },
+    "Privacy & Data" : {
+
+    },
+    "Profile" : {
+
+    },
+    "Progress Tracking" : {
+
+    },
+    "Protein: %lld%%" : {
+
+    },
+    "Quick Actions" : {
+
+    },
+    "Quick Add" : {
+
+    },
+    "Quick Presets" : {
+
+    },
+    "Quickly add nutrition without searching for a specific food" : {
+
+    },
+    "Recent Entries" : {
+
+    },
+    "Recommended Distributions" : {
+
+    },
+    "Recommended: 40% carbs, 30% protein, 30% fat" : {
+
+    },
+    "Remove" : {
+
+    },
+    "Remove from Favorites" : {
+
+    },
+    "Save" : {
+
+    },
+    "Save Entry" : {
+
+    },
+    "Save Weight" : {
+
+    },
+    "Scan Barcode" : {
+
+    },
+    "Search foods" : {
+
+    },
+    "Search foods, brands, categories" : {
+
+    },
+    "Search Type" : {
+
+    },
+    "Select Date" : {
+
+    },
+    "Select Meal Type" : {
+
+    },
+    "Selected Foods" : {
+
+    },
+    "Serving Quantity" : {
+
+    },
+    "Serving Size (Optional)" : {
+
+    },
+    "Serving Size:" : {
+
+    },
+    "Settings" : {
+
+    },
+    "Settings & Preferences" : {
+
+    },
+    "Show Calorie Goal Notifications" : {
+
+    },
+    "Social" : {
+
+    },
+    "Sources" : {
+
+    },
+    "Start Tracking" : {
+
+    },
+    "Statistics" : {
+
+    },
+    "Suggested Categories" : {
+
+    },
+    "support@caltrack.app" : {
+
+    },
+    "System Default" : {
+
+    },
+    "Tap for details" : {
+
+    },
+    "Tap on any macro indicator to see detailed weekly analysis" : {
+
+    },
+    "Tap the + button to add your first meal" : {
+
+    },
+    "Target Ratio" : {
+
+    },
+    "Theme" : {
+
+    },
+    "This helps us calculate your nutritional needs more accurately" : {
+
+    },
+    "Time Range" : {
+
+    },
+    "Today's Meals" : {
+
+    },
+    "Total: %lld%%" : {
+
+    },
+    "Track calories, reach your goals" : {
+
+    },
+    "Track Macronutrients" : {
+
+    },
+    "Track your progress by adding your current weight" : {
+
+    },
     "track_your_macros" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -24,6 +833,91 @@
         }
       }
     },
+    "Tracking Features" : {
+
+    },
+    "Try Again" : {
+
+    },
+    "Try different keywords or check your spelling" : {
+
+    },
+    "Use Accent Color" : {
+
+    },
+    "Version" : {
+
+    },
+    "View Detailed Breakdown" : {
+
+    },
+    "View Full Details" : {
+
+    },
+    "We use industry-standard encryption to protect your personal information." : {
+
+    },
+    "Website" : {
+
+    },
+    "Weekly %@ Trend" : {
+
+    },
+    "Weekly Average: %lld %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Weekly Average: %1$lld %2$@"
+          }
+        }
+      }
+    },
+    "Weekly Average: %lld cal" : {
+
+    },
+    "Weekly Goal" : {
+
+    },
+    "Weekly Goal Progress" : {
+
+    },
+    "Weekly Progress" : {
+
+    },
+    "Weekly Trend" : {
+
+    },
+    "Weekly Trends" : {
+
+    },
+    "Weight" : {
+      "comment" : "User's weight"
+    },
+    "Weight (kg)" : {
+
+    },
+    "Weight Entries" : {
+
+    },
+    "Weight Goal" : {
+
+    },
+    "Weight History" : {
+
+    },
+    "Weight History Chart" : {
+
+    },
+    "Weight Tracking" : {
+
+    },
+    "Weight Trend" : {
+
+    },
+    "Welcome to CalTrack" : {
+      "comment" : "Onboarding welcome message"
+    },
     "welcome_message" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -46,6 +940,18 @@
           }
         }
       }
+    },
+    "www.caltrack.app" : {
+
+    },
+    "Your data is used to:" : {
+
+    },
+    "Your Ratio" : {
+
+    },
+    "Your Results" : {
+
     }
   },
   "version" : "1.0"

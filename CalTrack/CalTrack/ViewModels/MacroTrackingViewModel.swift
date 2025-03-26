@@ -221,7 +221,7 @@ class MacroTrackingViewModel: ObservableObject {
         
         let baseValue = getMacroGoal(macroType) * 0.9 // Base around 90% of goal
         
-        for i in 0..<6 {
+        for _ in 0..<6 {
             let randomVariation = Double.random(in: -0.2...0.3)
             let dayValue = max(0, baseValue * (1 + randomVariation))
             result.append(dayValue)

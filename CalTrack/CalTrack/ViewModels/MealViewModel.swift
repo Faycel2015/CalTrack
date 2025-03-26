@@ -288,7 +288,7 @@ class MealViewModel {
     
     private func loadRecentAndFavoriteFoods() {
         // Load favorite foods
-          var favoritePredicate = #Predicate<FoodItem> { item in
+        let favoritePredicate = #Predicate<FoodItem> { item in
               item.isFavorite == true
           }
           

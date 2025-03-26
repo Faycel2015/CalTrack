@@ -220,19 +220,3 @@ class ProfileViewModel: ObservableObject {
         weightHistory = entries.sorted { $0.date > $1.date }
     }
 }
-
-// MARK: - Supporting Types
-
-/// Weight history entry
-struct WeightEntry: Identifiable {
-    let id = UUID()
-    let date: Date
-    let weight: Double
-    
-    var formattedDate: String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .none
-        return formatter.string(from: date)
-    }
-}

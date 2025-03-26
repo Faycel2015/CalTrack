@@ -21,7 +21,7 @@ struct CalTrackApp: App {
         // Configure model container for all our model entities
         do {
             modelContainer = try ModelContainer(
-                for: UserProfile.self, Meal.self, FoodItem.self,  // Remove brackets
+                for: UserProfile.self, Meal.self, FoodItem.self,
                 configurations: ModelConfiguration(
                     isStoredInMemoryOnly: false
                 )

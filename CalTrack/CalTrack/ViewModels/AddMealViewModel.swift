@@ -121,7 +121,7 @@ class AddMealViewModel: ObservableObject {
             
             if isEditing, let existingMeal = existingMeal {
                 // Update existing meal
-                try mealService.updateMeal(
+                _ = try mealService.updateMeal(
                     meal: existingMeal,
                     name: mealName,
                     date: selectedDate,
@@ -322,18 +322,16 @@ class AddMealViewModel: ObservableObject {
         
         Task {
             do {
-                // Get barcode service from app services (if available)
-                if let barcodeService = AppServices.shared.getBarcodeService?() {
-                    let foodItem = try await barcodeService.lookupProductByBarcode(barcode)
-                    
-                    await MainActor.run {
-                        self.currentFoodItem = foodItem
-                        self.servingQuantity = "1.0"
-                        self.isAddingFoodItem = true
-                        self.isLoading = false
-                    }
-                } else {
-                    throw AppError.serviceUnavailable("Barcode service not available")
+                // Get barcode service directly (without optional chaining)
+                let barcodeService = AppServices.shared.getBarcodeService()
+                
+                let foodItem = try await barcodeService.lookupProductByBarcode(barcode)
+                
+                await MainActor.run {
+                    self.currentFoodItem = foodItem
+                    self.servingQuantity = "1.0"
+                    self.isAddingFoodItem = true
+                    self.isLoading = false
                 }
             } catch {
                 await MainActor.run {

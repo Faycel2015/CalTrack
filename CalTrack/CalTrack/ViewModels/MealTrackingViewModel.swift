@@ -74,7 +74,13 @@ class MealTrackingViewModel: ObservableObject {
                 let summary = try await nutritionService.getNutritionSummary(for: selectedDate)
                 
                 // Update UI on main thread
+                // ✅ After — safe under Swift 6
                 await MainActor.run {
+                    var mealsByTypeDict: [MealType: [Meal]] = [:]
+                    for type in MealType.allCases {
+                        mealsByTypeDict[type] = mealsForDate.filter { $0.mealType == type }
+                    }
+
                     self.meals = mealsForDate
                     self.mealsByType = mealsByTypeDict
                     self.nutritionSummary = summary

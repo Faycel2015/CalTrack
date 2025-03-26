@@ -26,7 +26,7 @@ class BarcodeScannerViewModel: ObservableObject {
     @Published var isTorchOn = false
     
     // SwiftData Integration
-    private var modelContext: ModelContext?
+    var modelContext: ModelContext?
     
     // MARK: - Initialization
     

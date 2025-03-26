@@ -95,13 +95,13 @@ struct CardView<Content: View>: View {
 // Static convenience methods
 extension CardView {
     // Card with title and no action
-    static func titled<Content: View>(
+    static func titled<C: View>(
         _ title: String,
         icon: String? = nil,
         iconColor: Color = .accentColor,
-        @ViewBuilder content: () -> Content
-    ) -> CardView<Content> {
-        CardView(
+        @ViewBuilder content: () -> C
+    ) -> CardView<C> {
+        return CardView<C>(
             title: title,
             icon: icon,
             iconColor: iconColor,
@@ -110,16 +110,16 @@ extension CardView {
     }
     
     // Card with title and action
-    static func withAction<Content: View>(
+    static func withAction<C: View>(
         _ title: String,
         icon: String? = nil,
         iconColor: Color = .accentColor,
         actionLabel: String,
         actionIcon: String? = "chevron.right",
         onAction: @escaping () -> Void,
-        @ViewBuilder content: () -> Content
-    ) -> CardView<Content> {
-        CardView(
+        @ViewBuilder content: () -> C
+    ) -> CardView<C> {
+        return CardView<C>(
             title: title,
             icon: icon,
             iconColor: iconColor,
@@ -131,8 +131,8 @@ extension CardView {
     }
     
     // Simple card with no header
-    static func simple<Content: View>(@ViewBuilder content: () -> Content) -> CardView<Content> {
-        CardView(content: content)
+    static func simple<C: View>(@ViewBuilder content: () -> C) -> CardView<C> {
+        return CardView<C>(content: content)
     }
 }
 
@@ -141,14 +141,14 @@ struct CardView_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 20) {
             // Simple card
-            CardView.simple {
+            CardView<Text>.simple {
                 Text("This is a simple card with no header")
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding()
             }
             
             // Titled card
-            CardView.titled("Daily Summary", icon: "calendar") {
+            CardView<VStack<TupleView<(Text, Text, Text)>>>.titled("Daily Summary", icon: "calendar") {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Calories: 1,850 / 2,200")
                     Text("Protein: 95g / 130g")
@@ -157,7 +157,7 @@ struct CardView_Previews: PreviewProvider {
             }
             
             // Card with action
-            CardView.withAction(
+            CardView<VStack<TupleView<(HStack<TupleView<(Text, Spacer, Text)>>, HStack<TupleView<(Text, Spacer, Text)>>)>>>.withAction(
                 "Recent Meals",
                 icon: "fork.knife",
                 actionLabel: "See All",

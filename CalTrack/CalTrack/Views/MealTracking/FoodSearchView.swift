@@ -44,7 +44,7 @@ struct FoodSearchView: View {
             
             TextField("Search foods, brands, categories", text: $viewModel.searchQuery)
                 .textFieldStyle(PlainTextFieldStyle())
-                .onChange(of: viewModel.searchQuery) { _ in
+                .onChange(of: viewModel.searchQuery) { oldValue, newValue in
                     viewModel.searchFoods()
                 }
             

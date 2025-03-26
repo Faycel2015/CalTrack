@@ -157,6 +157,16 @@ public class ErrorHandler {
     }
 }
 
+// Create an identifiable error wrapper that uses your existing ErrorHandler
+struct IdentifiableError: Identifiable {
+    let id = UUID()
+    let error: Error
+    
+    var localizedDescription: String {
+        ErrorHandler.shared.userFriendlyMessage(for: error)
+    }
+}
+
 // MARK: - Error Handling Extensions
 
 /// Extends Error to provide more convenient error handling

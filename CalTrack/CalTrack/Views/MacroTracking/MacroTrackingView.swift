@@ -415,9 +415,9 @@ struct MacroTrackingView: View {
             // Generate some sample data for the charts
             let days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
             let calorieValues = [1850, 2100, 1950, 2000, 1800, 2250, Int(totalCalories)]
-            let carbValues = [220, 250, 240, 230, 210, 260, Int(totalCarbs)]
-            let proteinValues = [110, 100, 115, 105, 95, 125, Int(totalProtein)]
-            let fatValues = [60, 70, 65, 68, 58, 75, Int(totalFat)]
+            let _ = [220, 250, 240, 230, 210, 260, Int(totalCarbs)]
+            let _ = [110, 100, 115, 105, 95, 125, Int(totalProtein)]
+            let _ = [60, 70, 65, 68, 58, 75, Int(totalFat)]
             
             // Use the first trend chart as an example
             VStack(spacing: 10) {

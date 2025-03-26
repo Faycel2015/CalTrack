@@ -51,7 +51,7 @@ struct MealListView: View {
                 AddMealView(viewModel: viewModel.mealViewModel)
             }
             .sheet(isPresented: $showEditMeal) {
-                if let meal = selectedMeal {
+                if selectedMeal != nil {
                     AddMealView(viewModel: viewModel.mealViewModel, isEditing: true)
                 }
             }
@@ -101,7 +101,7 @@ struct MealListView: View {
         )
         .datePickerStyle(GraphicalDatePickerStyle())
         .padding()
-        .onChange(of: viewModel.selectedDate) { _ in
+        .onChange(of: viewModel.selectedDate) { oldValue, newValue in
             viewModel.loadMealsForSelectedDate()
         }
     }
