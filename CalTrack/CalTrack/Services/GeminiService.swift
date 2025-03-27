@@ -13,7 +13,7 @@ class GeminiService {
     
     private let apiKey: String
     private let baseURL = "https://generativelanguage.googleapis.com/v1beta"
-    private let model = "gemini-pro"
+    private let model = "gemini-2.0-flash"
     private let urlSession: URLSession
     
     // Dependencies

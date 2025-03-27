@@ -2,7 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- Basic Bundle Information -->
     <key>CFBundleName</key>
     <string>CalTrack</string>
     <key>CFBundleIdentifier</key>
@@ -15,49 +14,35 @@
     <string>APPL</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
-    
-    <!-- Privacy Permissions -->
     <key>NSCameraUsageDescription</key>
     <string>We need access to the camera for barcode scanning.</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>We need access to photos to customize your profile.</string>
-    
-    <!-- Network Security -->
     <key>NSAppTransportSecurity</key>
     <dict>
         <key>NSAllowsArbitraryLoads</key>
         <true/>
     </dict>
-    
-    <!-- Background Modes -->
     <key>UIBackgroundModes</key>
     <array>
         <string>fetch</string>
         <string>remote-notification</string>
     </array>
-    
-    <!-- Privacy Policy -->
     <key>NSPrivacyPolicyURL</key>
     <string>https://www.termsfeed.com/live/e615b2b2-279a-45e6-b6bb-f7e667408f2d</string>
-    
-    <!-- Interface Orientations -->
     <key>UISupportedInterfaceOrientations</key>
     <array>
         <string>UIInterfaceOrientationPortrait</string>
         <string>UIInterfaceOrientationPortraitUpsideDown</string>
     </array>
-    
-    <!-- User Interface Style -->
     <key>UIUserInterfaceStyle</key>
     <string>Light</string>
-    
-    <!-- Custom Font Support -->
     <key>UIAppFonts</key>
     <array>
-        <string>CustomFont.ttf</string>
+        <string>SF-Pro.ttf</string>
     </array>
-    
-    <!-- App Scene Configuration -->
+    <key>UILaunchStoryboardName</key>
+    <string>LaunchScreen</string>
     <key>UIApplicationSceneManifest</key>
     <dict>
         <key>UIApplicationSupportsMultipleScenes</key>

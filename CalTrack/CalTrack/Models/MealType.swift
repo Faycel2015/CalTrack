@@ -25,7 +25,7 @@ enum MealType: String, Codable, CaseIterable, Identifiable {
         case .breakfast: return "sunrise"
         case .lunch: return "sun.max"
         case .dinner: return "sunset"
-        case .snack: return "apple"
+        case .snack: return "apple.logo"
         case .other: return "fork.knife"
         }
     }

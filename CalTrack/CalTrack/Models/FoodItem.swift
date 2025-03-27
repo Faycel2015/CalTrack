@@ -133,7 +133,7 @@ class FoodDatabase {
         
         var systemImage: String {
             switch self {
-            case .fruits: return "apple"
+            case .fruits: return "apple.logo"
             case .vegetables: return "leaf"
             case .grains: return "square.grid.2x2"
             case .protein: return "seal"

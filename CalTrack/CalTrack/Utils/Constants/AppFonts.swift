@@ -55,7 +55,7 @@ public enum AppFonts {
     public static func registerCustomFonts() {
         // Example of how to register custom fonts
         // FontBook.registerFont(from: "CustomFont.ttf")
-        _ = Bundle.registerFont(withName: "CustomFont", fileExtension: "ttf")
+        _ = Bundle.registerFont(withName: "SF-Pro", fileExtension: "ttf")
     }
 }
 

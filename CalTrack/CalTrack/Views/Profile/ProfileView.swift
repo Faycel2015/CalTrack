@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct ProfileView: View {
-    @Environment(\.modelContext) var modelContext // Removed private modifier
+    @Environment(\.modelContext) var modelContext
     @StateObject private var viewModel = ProfileViewModel()
     @EnvironmentObject private var appState: AppState
     
