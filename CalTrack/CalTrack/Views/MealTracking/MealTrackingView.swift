@@ -10,7 +10,8 @@ import SwiftData
 
 struct MealTrackingView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var userProfiles: [UserProfile]
+//    @Query private var userProfiles: [UserProfile]
+    @Query(FetchDescriptor<UserProfile>()) private var userProfiles: [UserProfile]
     
     @State var viewModel: MealViewModel
     @State private var showDatePicker = false

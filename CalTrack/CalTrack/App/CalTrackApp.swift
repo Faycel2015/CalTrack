@@ -5,39 +5,32 @@
 //  Created by FayTek on 3/20/25.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 @main
 struct CalTrackApp: App {
-    // MARK: - SwiftData Setup
-    
-    // Define the model container for our app
     let modelContainer: ModelContainer
-    
-    // MARK: - Initializers
-    
+    @StateObject private var appState = AppState()
+
     init() {
-        // Configure model container for all our model entities
+        AppFonts.registerCustomFonts()
         do {
             modelContainer = try ModelContainer(
                 for: UserProfile.self, Meal.self, FoodItem.self,
-                configurations: ModelConfiguration(
-                    isStoredInMemoryOnly: false
-                )
+                configurations: ModelConfiguration(isStoredInMemoryOnly: false)
             )
         } catch {
             fatalError("Failed to initialize ModelContainer: \(error)")
         }
     }
-    
-    // MARK: - Body
-    
+
     var body: some Scene {
         WindowGroup {
             MainView()
+                .preferredColorScheme(appState.colorScheme) // Dynamically apply theme
+                .environmentObject(appState)
                 .onAppear {
-                    // Remove the unnecessary type casting
                     AppServices.shared.initialize(with: modelContainer.mainContext)
                 }
         }

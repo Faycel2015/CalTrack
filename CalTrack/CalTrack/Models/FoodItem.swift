@@ -165,3 +165,11 @@ class FoodDatabase {
         return getCommonFoods().filter { $0.name.lowercased().contains(lowercasedQuery) }
     }
 }
+
+// Add image name support
+extension FoodItem {
+    var imageName: String? {
+        let validNames = ["Apple", "Banana", "Chicken Breast", "White Rice", "Whole Milk"]
+        return validNames.contains(name) ? name : nil
+    }
+}

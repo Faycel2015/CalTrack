@@ -16,6 +16,10 @@ struct DashboardView: View {
     // States
     @State private var showMacroTracking = false
     @State private var showAddMeal = false
+    @State private var showLogWater = false
+    @State private var showLogExercise = false
+    @State private var showMealSuggestions = false
+    
     @State private var mockCalorieIntake: Double = 1650
     @State private var selectedDate: Date = Date()
 
@@ -271,7 +275,7 @@ struct DashboardView: View {
                         icon: "drop.fill",
                         color: .blue
                     ) {
-                        // Water logging action
+                        showLogWater = true
                     }
 
                     quickActionButton(
@@ -279,7 +283,7 @@ struct DashboardView: View {
                         icon: "figure.walk",
                         color: .green
                     ) {
-                        // Exercise logging action
+                        showLogExercise = true
                     }
 
                     quickActionButton(
@@ -287,7 +291,7 @@ struct DashboardView: View {
                         icon: "barcode.viewfinder",
                         color: .orange
                     ) {
-                        // Barcode scanner action
+                        showAddMeal = true
                     }
 
                     quickActionButton(
@@ -295,7 +299,7 @@ struct DashboardView: View {
                         icon: "fork.knife",
                         color: .purple
                     ) {
-                        // Meal suggestions action
+                        showMealSuggestions = true
                     }
                 }
                 .padding(.horizontal)

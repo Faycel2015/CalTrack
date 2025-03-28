@@ -10,24 +10,29 @@ import SwiftUI
 /// A centralized color palette for the CalTrack application
 public enum AppColors {
     // MARK: - Primary Colors
+    
     public static let primaryGreen = Color(hex: "#4CAF50")
-    public static let primaryBackground = Color(hex: "#F5F5F5")
+//    public static let primaryBackground = Color(hex: "#F5F5F5")
     
     // MARK: - Accent Colors
+    
     public static let accentBlue = Color("accentBlue")
     public static let accentRed = Color("accentRed")
     
     // MARK: - Text Colors
+    
     public static let primaryText = Color("primaryText")
     public static let secondaryText = Color("secondaryText")
     
     // MARK: - Macro Nutrition Colors
+    
     public static let caloriesColor = Color("calories-color")
     public static let carbsColor = Color("carbs-color")
     public static let proteinColor = Color("protein-color")
     public static let fatColor = Color("fat-color")
     
     // MARK: - Meal Type Colors
+    
     public static let breakfastColor = Color("breakfast-color")
     public static let lunchColor = Color("lunch-color")
     public static let dinnerColor = Color("dinner-color")
@@ -35,23 +40,40 @@ public enum AppColors {
     public static let otherMealColor = Color("other-meal-color")
     
     // MARK: - Weight Goal Colors
+    
     public static let weightLoseColor = Color("weight-lose-color")
     public static let weightMaintainColor = Color("weight-maintain-color")
     public static let weightGainColor = Color("weight-gain-color")
     
     // MARK: - Semantic Colors
+    
     public static let success = Color("success")
     public static let warning = Color("warning")
     public static let error = Color("error")
     
     // MARK: - Dark Mode Variants
+    
     public enum Dark {
         public static let dark = Color("dark")
         public static let light = Color("light")
     }
     
     // MARK: - UI Colors
+    
     public static let launchScreenBackground = Color("launchScreenBackground")
+    
+    // MARK: - Improve UI Contrast & Dynamic Colors
+    
+    public static let primaryBackground = Color(UIColor { trait in
+        trait.userInterfaceStyle == .dark ? .black : .white
+    })
+    
+    public static let cardBackground = Color(UIColor { trait in
+        trait.userInterfaceStyle == .dark ? UIColor.systemGray6 : UIColor.systemBackground
+    })
+    
+    public static let cardShadow = Color.black.opacity(0.1)
+    
 }
 
 // Extension to allow hex color initialization
@@ -81,7 +103,7 @@ extension Color {
             opacity: 1.0
         )
     }
-    
+
     /// Creates a color with a brightness variation
     /// - Parameter percentage: Percentage to brighten or darken the color (positive for brighter, negative for darker)
     func adjustedBrightness(by percentage: CGFloat) -> Color {
@@ -90,11 +112,11 @@ extension Color {
         var saturation: CGFloat = 0
         var brightness: CGFloat = 0
         var alpha: CGFloat = 0
-        
+
         uiColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
-        
+
         let adjustedBrightness = max(0, min(1, brightness + (percentage / 100)))
-        
+
         return Color(UIColor(hue: hue, saturation: saturation, brightness: adjustedBrightness, alpha: alpha))
     }
 }
