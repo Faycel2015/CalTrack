@@ -15,6 +15,7 @@ struct MealListView: View {
     @State private var showEditMeal = false
     @State private var showDatePicker = false
     
+    @MainActor
     init(modelContext: ModelContext) {
         _viewModel = StateObject(wrappedValue: MealListViewModel(modelContext: modelContext))
     }
@@ -277,6 +278,7 @@ struct MealListView: View {
 }
 
 // MARK: - View Model
+@MainActor
 class MealListViewModel: ObservableObject {
     // MARK: - Properties
     private let modelContext: ModelContext
@@ -339,6 +341,7 @@ class MealListViewModel: ObservableObject {
     }
     
     // MARK: - Meal Actions
+    @MainActor
     func startCreatingMeal(type: MealType) {
         mealViewModel.startCreatingMeal(type: type)
         showAddMeal = true

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 /// Service for AI-powered meal suggestions and nutrition analysis using Google's Gemini API
 class GeminiService {
@@ -112,7 +113,7 @@ class GeminiService {
     /// Send a prompt to the Gemini API
     /// - Parameter prompt: The text prompt to send
     /// - Returns: Response from the API
-    private func sendPromptToGemini(_ prompt: String) async throws -> String {
+    func sendPromptToGemini(_ prompt: String) async throws -> String {
         // Construct URL
         let endpoint = "\(baseURL)/models/\(model):generateContent"
         guard var urlComponents = URLComponents(string: endpoint) else {
@@ -162,22 +163,31 @@ class GeminiService {
             throw GeminiServiceError.invalidResponse
         }
         
-        guard 200...299 ~= httpResponse.statusCode else {
-            throw GeminiServiceError.requestFailed(statusCode: httpResponse.statusCode, message: String(data: data, encoding: .utf8) ?? "Unknown error")
+        if !(200...299).contains(httpResponse.statusCode) {
+            let messageString = String(data: data, encoding: .utf8) ?? "Unknown error"
+            throw GeminiServiceError.requestFailed(statusCode: httpResponse.statusCode, message: messageString)
         }
         
         // Parse response
-        guard let jsonResponse = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let candidates = jsonResponse["candidates"] as? [[String: Any]],
-              let firstCandidate = candidates.first,
-              let content = firstCandidate["content"] as? [String: Any],
-              let parts = content["parts"] as? [[String: Any]],
-              let firstPart = parts.first,
-              let text = firstPart["text"] as? String else {
-            throw GeminiServiceError.invalidResponseFormat
+        do {
+            guard let jsonResponse = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let candidates = jsonResponse["candidates"] as? [[String: Any]],
+                  let firstCandidate = candidates.first,
+                  let content = firstCandidate["content"] as? [String: Any],
+                  let parts = content["parts"] as? [[String: Any]],
+                  let firstPart = parts.first,
+                  let text = firstPart["text"] as? String else {
+                throw GeminiServiceError.invalidResponseFormat
+            }
+            
+            return text
+        } catch {
+            if let error = error as? GeminiServiceError {
+                throw error
+            } else {
+                throw GeminiServiceError.invalidResponseFormat
+            }
         }
-        
-        return text
     }
     
     /// Build prompt for meal suggestions

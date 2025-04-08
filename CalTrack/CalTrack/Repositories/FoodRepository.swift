@@ -9,6 +9,7 @@ import Foundation
 import SwiftData
 
 /// Repository class for handling food item data operations
+@MainActor
 class FoodRepository {
     private let modelContext: ModelContext
     private let foodDatabase = FoodDatabase.shared
@@ -53,7 +54,7 @@ class FoodRepository {
     /// Search for food items in the database
     /// - Parameter query: The search query
     /// - Returns: Array of matching food items
-    func searchFoodItems(_ query: String) throws -> [FoodItem] {
+    func searchFoodItems(_ query: String) async throws -> [FoodItem] {
         if query.isEmpty {
             return []
         }
@@ -69,7 +70,8 @@ class FoodRepository {
         let customResults = try modelContext.fetch(descriptor)
         
         // Then, search the built-in food database
-        let builtInResults = foodDatabase.searchFoods(query: query)
+        // Use await since FoodDatabase is an actor
+        let builtInResults = await foodDatabase.searchFoods(query: query)
         
         // Combine the results, with custom items first
         return customResults + builtInResults
@@ -125,8 +127,9 @@ class FoodRepository {
     
     /// Get common food items from the built-in database
     /// - Returns: Array of common food items
-    func getCommonFoodItems() -> [FoodItem] {
-        return foodDatabase.getCommonFoods()
+    func getCommonFoodItems() async -> [FoodItem] {
+        // Use await since FoodDatabase is an actor
+        return await foodDatabase.getCommonFoods()
     }
     
     /// Create a custom food item

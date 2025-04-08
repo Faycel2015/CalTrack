@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 /// Global application state
+@MainActor // Add MainActor attribute for Swift 6 compliance
 class AppState: ObservableObject {
     // MARK: - Published Properties
     
@@ -29,6 +30,9 @@ class AppState: ObservableObject {
     
     // Theme
     @Published var colorScheme: ColorScheme? = nil
+    
+    // Deep linking
+    @Published var deepLink: DeepLink? = nil
     
     // MARK: - Initializer
     
@@ -98,10 +102,33 @@ class AppState: ObservableObject {
     /// Navigate to a specific tab
     /// - Parameter tabIndex: The tab index to select
     func navigateToTab(_ tabIndex: Int) {
-        // Ensure the tab index is valid
-        if tabIndex >= 0 && tabIndex <= 3 {
+        // Ensure the tab index is valid (now including the insights tab)
+        if tabIndex >= 0 && tabIndex <= 4 {
             selectedTab = tabIndex
         }
+    }
+    
+    /// Handle deep link navigation
+    /// - Parameter deepLink: The deep link to handle
+    func handleDeepLink(_ deepLink: DeepLink) {
+        switch deepLink {
+        case .mealDetail(_):
+            selectedTab = 1
+            // Additional logic to navigate to specific meal can be added
+            
+        case .macroDetail(_):
+            selectedTab = 2
+            // Additional logic for macro details can be added
+            
+        case .insights:
+            selectedTab = 4
+            
+        case .profile:
+            selectedTab = 3
+        }
+        
+        // Clear the deep link after handling
+        self.deepLink = nil
     }
     
     // MARK: - Persistence
@@ -156,6 +183,7 @@ enum AppError: Error, Identifiable {
     case serverError(String)
     case serviceUnavailable(String)
     case unknown(String)
+    case initializationError(String)
     
     var id: String {
         switch self {
@@ -165,6 +193,7 @@ enum AppError: Error, Identifiable {
         case .serverError(let message): return "server_\(message.hashValue)"
         case .serviceUnavailable(let message): return "service_\(message.hashValue)"
         case .unknown(let message): return "unknown_\(message.hashValue)"
+        case .initializationError(let message): return "init_\(message.hashValue)"
         }
     }
     
@@ -182,6 +211,8 @@ enum AppError: Error, Identifiable {
             return "Service Unavailable: \(message)"
         case .unknown(let message):
             return "Unknown Error: \(message)"
+        case .initializationError(let message):
+            return "Initialization Error: \(message)"
         }
     }
 }
@@ -197,6 +228,7 @@ enum AppFeature: String, CaseIterable, Identifiable {
     case weightTracking = "Weight Tracking"
     case exportData = "Export Data"
     case darkMode = "Dark Mode"
+    case aiNutritionAssistant = "AI Nutrition Assistant"
     
     var id: String { self.rawValue }
     
@@ -216,6 +248,8 @@ enum AppFeature: String, CaseIterable, Identifiable {
             return "Export nutrition data in CSV format"
         case .darkMode:
             return "Use dark mode appearance"
+        case .aiNutritionAssistant:
+            return "Get AI-powered insights and recommendations for your nutrition"
         }
     }
     
@@ -228,6 +262,17 @@ enum AppFeature: String, CaseIterable, Identifiable {
         case .weightTracking: return "scalemass.fill"
         case .exportData: return "square.and.arrow.up"
         case .darkMode: return "moon.fill"
+        case .aiNutritionAssistant: return "brain.fill"
         }
     }
+}
+
+// MARK: - Deep Link
+
+/// Deep link enum for app navigation
+enum DeepLink: Equatable {
+    case mealDetail(String)
+    case macroDetail(MacroType)
+    case insights
+    case profile
 }

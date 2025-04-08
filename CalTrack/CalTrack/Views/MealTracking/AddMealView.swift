@@ -131,7 +131,10 @@ struct AddMealView: View {
                 TextField("Search foods", text: $viewModel.searchQuery)
                     .textFieldStyle(PlainTextFieldStyle())
                     .onChange(of: viewModel.searchQuery) { _, _ in
-                        viewModel.searchFoods()
+                        // Use Task to call the async method
+                        Task {
+                            await viewModel.searchFoods()
+                        }
                     }
 
                 Button(action: {

@@ -200,6 +200,7 @@ struct FoodSearchView: View {
 }
 
 // MARK: - View Model
+@MainActor // Add MainActor to properly isolate UI updates
 class FoodSearchViewModel: ObservableObject {
     @Published var searchQuery: String = ""
     @Published var searchResults: [FoodItem] = []
@@ -216,6 +217,12 @@ class FoodSearchViewModel: ObservableObject {
     }
     
     func searchFoods() {
+        Task {
+            await performSearch()
+        }
+    }
+    
+    private func performSearch() async {
         guard !searchQuery.isEmpty else {
             searchResults = []
             return
@@ -223,23 +230,22 @@ class FoodSearchViewModel: ObservableObject {
         
         isLoading = true
         
-        // Simulate search with a delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            guard let self = self else { return }
-            
-            switch self.searchType {
-            case .all:
-                self.searchResults = FoodDatabase.shared.searchFoods(query: self.searchQuery)
-            case .recent:
-                // TODO: Implement recent food search
-                self.searchResults = []
-            case .favorite:
-                // TODO: Implement favorite food search
-                self.searchResults = []
-            }
-            
-            self.isLoading = false
+        // Add a small delay to prevent too many searches while typing
+        try? await Task.sleep(nanoseconds: 500_000_000)
+        
+        switch searchType {
+        case .all:
+            // Use await since FoodDatabase is an actor
+            searchResults = await FoodDatabase.shared.searchFoods(query: searchQuery)
+        case .recent:
+            // TODO: Implement recent food search
+            searchResults = []
+        case .favorite:
+            // TODO: Implement favorite food search
+            searchResults = []
         }
+        
+        isLoading = false
     }
 }
 

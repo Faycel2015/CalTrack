@@ -189,9 +189,6 @@
     "Add Meal" : {
       "comment" : "Button to add a new meal"
     },
-    "Add Meal View" : {
-
-    },
     "Add to Favorites" : {
 
     },
@@ -208,6 +205,9 @@
 
     },
     "Age" : {
+
+    },
+    "AI Nutrition Insights" : {
 
     },
     "Align barcode within frame" : {
@@ -407,6 +407,9 @@
     "Edit Profile" : {
       "comment" : "Button to edit user profile"
     },
+    "Education Topic" : {
+
+    },
     "Email" : {
 
     },
@@ -429,6 +432,9 @@
 
     },
     "Error" : {
+
+    },
+    "Error: %@" : {
 
     },
     "Export My Data" : {
@@ -465,6 +471,12 @@
 
     },
     "Gender" : {
+
+    },
+    "Generating AI Insights..." : {
+
+    },
+    "Get Education Content" : {
 
     },
     "Get Started" : {
@@ -524,6 +536,12 @@
     "Loading profile..." : {
 
     },
+    "Log Exercise - Coming Soon" : {
+
+    },
+    "Log Water - Coming Soon" : {
+
+    },
     "Lowest" : {
 
     },
@@ -555,6 +573,9 @@
 
     },
     "Meal Breakdown" : {
+
+    },
+    "Meal Suggestions - Coming Soon" : {
 
     },
     "Meal Type" : {
@@ -605,6 +626,9 @@
     "Nutrition Information" : {
 
     },
+    "Nutrition Profile Analysis" : {
+
+    },
     "Nutrition Summary" : {
 
     },
@@ -643,6 +667,9 @@
 
     },
     "Personal Information" : {
+
+    },
+    "Personalized Recommendations" : {
 
     },
     "Please allow camera access in Settings to scan barcodes." : {
@@ -697,6 +724,9 @@
 
     },
     "Recommended: 40% carbs, 30% protein, 30% fat" : {
+
+    },
+    "Refresh Insights" : {
 
     },
     "Remove" : {

@@ -10,6 +10,7 @@ import SwiftData
 import Combine
 
 /// View model for the macro tracking screen
+@MainActor // Add MainActor to the entire class
 class MacroTrackingViewModel: ObservableObject {
     // MARK: - Services
     
@@ -40,10 +41,19 @@ class MacroTrackingViewModel: ObservableObject {
     
     // MARK: - Initializer
     
-    init() {
-        // Get services from service locator
-        self.nutritionService = AppServices.shared.getNutritionService()
-        self.userRepository = AppServices.shared.getUserRepository()
+    init(nutritionService: NutritionService? = nil, userRepository: UserRepository? = nil) {
+        // Get services from service locator or use the provided ones
+        if let nutritionService = nutritionService {
+            self.nutritionService = nutritionService
+        } else {
+            self.nutritionService = AppServices.shared.getNutritionService()
+        }
+        
+        if let userRepository = userRepository {
+            self.userRepository = userRepository
+        } else {
+            self.userRepository = AppServices.shared.getUserRepository()
+        }
         
         // Load initial data
         loadUserProfile()
@@ -65,16 +75,14 @@ class MacroTrackingViewModel: ObservableObject {
                 // Load weekly summary
                 let weeklySummary = try await nutritionService.getWeeklyNutritionSummary(endDate: selectedDate)
                 
-                await MainActor.run {
-                    self.nutritionSummary = summary
-                    self.weeklyNutritionSummary = weeklySummary
-                    self.isLoading = false
-                }
+                // No need for MainActor.run since the class is already @MainActor
+                self.nutritionSummary = summary
+                self.weeklyNutritionSummary = weeklySummary
+                self.isLoading = false
             } catch {
-                await MainActor.run {
-                    self.error = AppError.dataError("Failed to load nutrition data: \(error.localizedDescription)")
-                    self.isLoading = false
-                }
+                // No need for MainActor.run since the class is already @MainActor
+                self.error = AppError.dataError("Failed to load nutrition data: \(error.localizedDescription)")
+                self.isLoading = false
             }
         }
     }

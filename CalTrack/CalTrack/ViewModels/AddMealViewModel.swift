@@ -10,6 +10,7 @@ import SwiftData
 import Combine
 
 /// View model for adding or editing meals
+@MainActor
 class AddMealViewModel: ObservableObject {
     // MARK: - Services
     
@@ -113,6 +114,7 @@ class AddMealViewModel: ObservableObject {
     // MARK: - Public Methods
     
     /// Save the meal
+    @MainActor
     func saveMeal() {
         isLoading = true
         
@@ -171,17 +173,14 @@ class AddMealViewModel: ObservableObject {
         // Perform search
         Task {
             do {
-                let results = try foodRepository.searchFoodItems(searchQuery)
+                let results = try await foodRepository.searchFoodItems(searchQuery)
                 
-                await MainActor.run {
-                    self.searchResults = results
-                    self.isLoading = false
-                }
+                // We're already in a MainActor context, so no need to await
+                self.searchResults = results
+                self.isLoading = false
             } catch {
-                await MainActor.run {
-                    self.error = AppError.dataError("Failed to search foods: \(error.localizedDescription)")
-                    self.isLoading = false
-                }
+                self.error = AppError.dataError("Failed to search foods: \(error.localizedDescription)")
+                self.isLoading = false
             }
         }
     }
@@ -286,13 +285,13 @@ class AddMealViewModel: ObservableObject {
     
     /// Toggle favorite status for a food item
     /// - Parameter item: The food item
-    func toggleFavoriteFoodItem(_ item: FoodItem) {
+    func toggleFavoriteFoodItem(_ foodItem: FoodItem) {
         Task {
             do {
-                let isFavorite = try foodRepository.toggleFavorite(for: item)
+                let isFavorite = try foodRepository.toggleFavorite(for: foodItem)
                 
                 // If the item is in our selected items, update it there too
-                if let index = selectedFoodItems.firstIndex(where: { $0.id == item.id }) {
+                if let index = selectedFoodItems.firstIndex(where: { $0.id == foodItem.id }) {
                     selectedFoodItems[index].isFavorite = isFavorite
                 }
                 
@@ -327,17 +326,14 @@ class AddMealViewModel: ObservableObject {
                 
                 let foodItem = try await barcodeService.lookupProductByBarcode(barcode)
                 
-                await MainActor.run {
-                    self.currentFoodItem = foodItem
-                    self.servingQuantity = "1.0"
-                    self.isAddingFoodItem = true
-                    self.isLoading = false
-                }
+                // We're already in a MainActor context
+                self.currentFoodItem = foodItem
+                self.servingQuantity = "1.0"
+                self.isAddingFoodItem = true
+                self.isLoading = false
             } catch {
-                await MainActor.run {
-                    self.error = AppError.dataError("Failed to lookup product: \(error.localizedDescription)")
-                    self.isLoading = false
-                }
+                self.error = AppError.dataError("Failed to lookup product: \(error.localizedDescription)")
+                self.isLoading = false
             }
         }
     }
@@ -348,20 +344,15 @@ class AddMealViewModel: ObservableObject {
     private func loadRecentAndFavoriteFoods() {
         Task {
             do {
-                // Load recent foods
-                let recent = try foodRepository.getRecentFoodItems(limit: 10)
+                // Create copies of the results to ensure Sendable compliance
+                let recentItems = try foodRepository.getRecentFoodItems(limit: 10)
+                let favoriteItems = try foodRepository.getFavoriteFoodItems()
                 
-                // Load favorite foods
-                let favorites = try foodRepository.getFavoriteFoodItems()
-                
-                await MainActor.run {
-                    self.recentFoods = recent
-                    self.favoriteFoods = favorites
-                }
+                // We're already in a MainActor context
+                self.recentFoods = recentItems
+                self.favoriteFoods = favoriteItems
             } catch {
-                await MainActor.run {
-                    self.error = AppError.dataError("Failed to load recent/favorite foods: \(error.localizedDescription)")
-                }
+                self.error = AppError.dataError("Failed to load recent/favorite foods: \(error.localizedDescription)")
             }
         }
     }

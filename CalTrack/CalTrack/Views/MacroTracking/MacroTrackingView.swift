@@ -10,7 +10,8 @@ import SwiftData
 
 struct MacroTrackingView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var userProfiles: [UserProfile]
+//    @Query private var userProfiles: [UserProfile]
+    @Query(FetchDescriptor<UserProfile>()) private var userProfiles: [UserProfile]
     
     // Selected date for tracking
     @State private var selectedDate: Date = Date()

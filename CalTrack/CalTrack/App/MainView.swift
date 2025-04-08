@@ -13,6 +13,7 @@ struct MainView: View {
     // MARK: - Environment
     
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.scenePhase) private var scenePhase
     
     // MARK: - State
     
@@ -31,15 +32,9 @@ struct MainView: View {
                     .environmentObject(appState)
             } else {
                 SplashScreen()
-                    .onAppear {
-                        // Initialize the main view model with a slight delay
-                        // to show the splash screen
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                            mainViewModel = MainViewModel(
-                                modelContext: modelContext,
-                                appState: appState
-                            )
-                        }
+                    .task {
+                        // Use task instead of onAppear for better SwiftUI lifecycle handling
+                        await initializeViewModel()
                     }
             }
         }
@@ -58,6 +53,28 @@ struct MainView: View {
                 }
             )
         }
+        // Handle app lifecycle events
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            if let viewModel = mainViewModel {
+                Task {
+                    await viewModel.handleAppStateChange(newPhase)
+                }
+            }
+        }
+    }
+    
+    // MARK: - Private Methods
+    
+    @MainActor
+    private func initializeViewModel() async {
+        // Add a slight delay to show the splash screen
+        try? await Task.sleep(nanoseconds: 1_000_000_000)
+        
+        // Initialize the main view model
+        mainViewModel = MainViewModel(
+            modelContext: modelContext,
+            appState: appState
+        )
     }
 }
 
@@ -118,6 +135,7 @@ struct SplashScreen: View {
 // MARK: - Main View Model
 
 /// View model for the main content view
+@MainActor
 class MainViewModel: ObservableObject {
     // MARK: - Properties
     
@@ -125,11 +143,13 @@ class MainViewModel: ObservableObject {
     private let modelContext: ModelContext
     private let appState: AppState
     private let userRepository: UserRepository
+    private let nutritionService: NutritionService
     
     // State
     @Published var hasUserProfile: Bool = false
     @Published var isCheckingProfile: Bool = true
     @Published var error: AppError? = nil
+    @Published var isInitialized: Bool = false
     
     // MARK: - Initializers
     
@@ -137,19 +157,49 @@ class MainViewModel: ObservableObject {
         self.modelContext = modelContext
         self.appState = appState
         
-        // Get repository from service locator
+        // Get repositories and services from service locator
         self.userRepository = AppServices.shared.getUserRepository()
+        self.nutritionService = AppServices.shared.getNutritionService()
         
         // Check if user profile exists
-        checkUserProfile()
+        Task {
+            await initializeApp()
+        }
     }
     
-    // MARK: - Methods
+    // Set model context after initialization (useful for previews)
+    func setModelContext(_ context: ModelContext) {
+        // This is helpful for preview environments
+    }
     
-    /// Check if a user profile exists
-    private func checkUserProfile() {
+    // MARK: - App Initialization
+    
+    private func initializeApp() async {
         isCheckingProfile = true
         
+        do {
+            // Initialize user data
+            try await initializeUserData()
+            
+            // Load cached nutrition data
+            try await nutritionService.loadCachedData()
+            
+            // Set app state based on user status
+            if !hasUserProfile {
+                appState.selectedTab = 3 // Go to profile tab if no user
+            }
+            
+            // Mark as initialized
+            isInitialized = true
+        } catch {
+            self.error = AppError.initializationError("Failed to initialize app: \(error.localizedDescription)")
+            appState.showError(AppError.initializationError("Failed to initialize app: \(error.localizedDescription)"))
+        }
+        
+        isCheckingProfile = false
+    }
+    
+    private func initializeUserData() async throws {
         do {
             let profile = try userRepository.getCurrentUserProfile()
             hasUserProfile = profile != nil
@@ -157,14 +207,84 @@ class MainViewModel: ObservableObject {
         } catch {
             self.error = AppError.dataError("Failed to check user profile: \(error.localizedDescription)")
             appState.showError(AppError.dataError("Failed to check user profile: \(error.localizedDescription)"))
+            throw error
         }
+    }
+    
+    // MARK: - App State Management
+    
+    func handleAppStateChange(_ scenePhase: ScenePhase) async {
+        switch scenePhase {
+        case .active:
+            // App became active
+            if isInitialized {
+                // Refresh data if needed
+                try? await refreshAppData()
+            }
+        case .background:
+            // App went to background
+            // Perform cleanup or save state if needed
+            break
+        case .inactive:
+            // App is inactive
+            break
+        @unknown default:
+            break
+        }
+    }
+    
+    private func refreshAppData() async throws {
+        // Refresh nutrition data
+        try await nutritionService.refreshData()
         
-        isCheckingProfile = false
+        // Check user profile again
+        try await initializeUserData()
+    }
+    
+    // MARK: - Deep Link Handling
+    
+    func handleDeepLink(_ url: URL) {
+        // Parse URL and set appropriate deep link
+        let urlString = url.absoluteString
+        
+        if urlString.contains("meal") {
+            // Example: caltrack://meal/123
+            let components = urlString.components(separatedBy: "/")
+            if components.count > 2 {
+                let mealId = components[2]
+                appState.deepLink = .mealDetail(mealId)
+            }
+        } else if urlString.contains("macro") {
+            // Example: caltrack://macro/protein
+            let components = urlString.components(separatedBy: "/")
+            if components.count > 2 {
+                let macroString = components[2].lowercased()
+                if macroString == "protein" {
+                    appState.deepLink = .macroDetail(.protein)
+                } else if macroString == "carbs" {
+                    appState.deepLink = .macroDetail(.carbs)
+                } else if macroString == "fat" {
+                    appState.deepLink = .macroDetail(.fat)
+                } else if macroString == "calories" {
+                    appState.deepLink = .macroDetail(.calories)
+                }
+            }
+        } else if urlString.contains("insights") {
+            // Example: caltrack://insights
+            appState.deepLink = .insights
+        } else if urlString.contains("profile") {
+            // Example: caltrack://profile
+            appState.deepLink = .profile
+        }
     }
     
     /// Handle onboarding completion
     func handleOnboardingComplete() {
         appState.completeOnboarding()
-        checkUserProfile()
+        
+        // Recheck user profile
+        Task {
+            try? await initializeUserData()
+        }
     }
 }

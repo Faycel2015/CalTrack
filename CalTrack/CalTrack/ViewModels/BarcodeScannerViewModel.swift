@@ -11,6 +11,7 @@ import SwiftUI
 import SwiftData
 
 /// View model for barcode scanner
+@MainActor // Mark the entire class as MainActor
 class BarcodeScannerViewModel: ObservableObject {
     // MARK: - Properties
     
@@ -54,17 +55,18 @@ class BarcodeScannerViewModel: ObservableObject {
         // Look up product information
         Task {
             do {
+                // Since BarcodeService.lookupProductByBarcode returns a non-Sendable type (FoodItem)
+                // and we're in a @Sendable closure (Task), we need to make sure FoodItem is Sendable
+                // or isolate this code properly
                 let foodItem = try await barcodeService.lookupProductByBarcode(barcode)
                 
-                await MainActor.run {
-                    self.scannedFoodItem = foodItem
-                    self.isLoading = false
-                }
+                // Since the class is now @MainActor, we don't need MainActor.run here
+                self.scannedFoodItem = foodItem
+                self.isLoading = false
             } catch {
-                await MainActor.run {
-                    self.error = error
-                    self.isLoading = false
-                }
+                // Since the class is now @MainActor, we don't need MainActor.run here
+                self.error = error
+                self.isLoading = false
             }
         }
     }
@@ -112,7 +114,7 @@ class BarcodeScannerViewModel: ObservableObject {
             // Request permission
             AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
                 if !granted {
-                    DispatchQueue.main.async {
+                    Task { @MainActor in
                         self?.showPermissionAlert = true
                     }
                 }

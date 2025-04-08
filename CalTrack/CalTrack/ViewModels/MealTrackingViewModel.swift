@@ -10,6 +10,7 @@ import SwiftData
 import Combine
 
 /// View model for the meal tracking screen
+@MainActor
 class MealTrackingViewModel: ObservableObject {
     // MARK: - Services
     
@@ -61,36 +62,27 @@ class MealTrackingViewModel: ObservableObject {
         
         Task {
             do {
-                // Load meals
+                // Load meals - synchronous operation
                 let mealsForDate = try mealService.getMealsForDate(selectedDate)
                 
-                // Group meals by type
+                // Create the mealsByType dictionary
                 var mealsByTypeDict: [MealType: [Meal]] = [:]
                 for type in MealType.allCases {
                     mealsByTypeDict[type] = mealsForDate.filter { $0.mealType == type }
                 }
                 
-                // Load nutrition summary
+                // Load nutrition summary - this is async
                 let summary = try await nutritionService.getNutritionSummary(for: selectedDate)
                 
-                // Update UI on main thread
-                // ✅ After — safe under Swift 6
-                await MainActor.run {
-                    var mealsByTypeDict: [MealType: [Meal]] = [:]
-                    for type in MealType.allCases {
-                        mealsByTypeDict[type] = mealsForDate.filter { $0.mealType == type }
-                    }
-
-                    self.meals = mealsForDate
-                    self.mealsByType = mealsByTypeDict
-                    self.nutritionSummary = summary
-                    self.isLoading = false
-                }
+                // Since we're already on the MainActor, no need for await MainActor.run
+                self.meals = mealsForDate
+                self.mealsByType = mealsByTypeDict
+                self.nutritionSummary = summary
+                self.isLoading = false
             } catch {
-                await MainActor.run {
-                    self.error = AppError.dataError("Failed to load meals: \(error.localizedDescription)")
-                    self.isLoading = false
-                }
+                // Since we're already on the MainActor, no need for await MainActor.run
+                self.error = AppError.dataError("Failed to load meals: \(error.localizedDescription)")
+                self.isLoading = false
             }
         }
     }
@@ -122,16 +114,13 @@ class MealTrackingViewModel: ObservableObject {
     func deleteMeal(_ meal: Meal) {
         Task {
             do {
+                // Service method is synchronous, no await needed
                 try mealService.deleteMeal(meal)
                 
-                await MainActor.run {
-                    // Reload meals after deletion
-                    loadMeals()
-                }
+                // Reload meals after deletion
+                loadMeals()
             } catch {
-                await MainActor.run {
-                    self.error = AppError.dataError("Failed to delete meal: \(error.localizedDescription)")
-                }
+                self.error = AppError.dataError("Failed to delete meal: \(error.localizedDescription)")
             }
         }
     }
@@ -141,18 +130,17 @@ class MealTrackingViewModel: ObservableObject {
     func toggleFavoriteMeal(_ meal: Meal) {
         Task {
             do {
+                // Service method is synchronous, no await needed
                 let isFavorite = try mealService.toggleFavoriteMeal(meal)
                 
-                await MainActor.run {
-                    // Update the meal in our local list
-                    if let index = meals.firstIndex(where: { $0.id == meal.id }) {
-                        meals[index].isFavorite = isFavorite
-                    }
+                // Update the meal in our local list
+                // Since SwiftData objects are references, this may already be updated
+                // But we'll keep this code for safety
+                if let index = meals.firstIndex(where: { $0 === meal }) {
+                    meals[index].isFavorite = isFavorite
                 }
             } catch {
-                await MainActor.run {
-                    self.error = AppError.dataError("Failed to update favorite status: \(error.localizedDescription)")
-                }
+                self.error = AppError.dataError("Failed to update favorite status: \(error.localizedDescription)")
             }
         }
     }

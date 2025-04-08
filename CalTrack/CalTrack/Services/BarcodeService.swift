@@ -11,6 +11,7 @@ import UIKit
 import SwiftUI
 
 /// Service for barcode scanning and food product lookup
+@MainActor
 class BarcodeService: NSObject {
     // MARK: - Properties
     
@@ -98,22 +99,22 @@ class BarcodeService: NSObject {
     }
     
     /// Start the barcode scanning session
-    func startScanning() {
-        guard let captureSession = captureSession, !isScanning else { return }
-        
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            self?.isScanning = true
+    nonisolated func startScanning() {
+        Task { @MainActor in
+            guard let captureSession = captureSession, !isScanning else { return }
+            
+            isScanning = true
             captureSession.startRunning()
         }
     }
     
     /// Stop the barcode scanning session
-    func stopScanning() {
-        guard let captureSession = captureSession, isScanning else { return }
-        
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+    nonisolated func stopScanning() {
+        Task { @MainActor in
+            guard let captureSession = captureSession, isScanning else { return }
+            
             captureSession.stopRunning()
-            self?.isScanning = false
+            isScanning = false
         }
     }
     
@@ -156,7 +157,7 @@ class BarcodeService: NSObject {
             throw BarcodeServiceError.invalidURL
         }
         
-        // Send request
+        // Send request - nonisolated work
         let (data, response) = try await urlSession.data(from: url)
         
         // Check response
@@ -176,7 +177,7 @@ class BarcodeService: NSObject {
             throw BarcodeServiceError.invalidResponseFormat
         }
         
-        // Extract product information
+        // Extract product information and return the FoodItem
         return try parseFoodData(product, barcode: barcode)
     }
     
@@ -266,37 +267,38 @@ class BarcodeService: NSObject {
 // MARK: - AVCaptureMetadataOutputObjectsDelegate
 
 extension BarcodeService: AVCaptureMetadataOutputObjectsDelegate {
-    func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
-        // Check if we have barcode metadata
+    nonisolated func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         guard let metadataObject = metadataObjects.first as? AVMetadataMachineReadableCodeObject,
               let stringValue = metadataObject.stringValue else {
             return
         }
         
-        // Check if we're debouncing this barcode
-        let currentTime = Date()
-        if let lastCode = lastScannedCode, lastCode == stringValue,
-           let lastTime = lastScanTime, currentTime.timeIntervalSince(lastTime) < debounceInterval {
-            // Skip this scan (debounce)
-            return
+        Task { @MainActor in
+            // Check if we're debouncing this barcode
+            let currentTime = Date()
+            if let lastCode = lastScannedCode, lastCode == stringValue,
+               let lastTime = lastScanTime, currentTime.timeIntervalSince(lastTime) < debounceInterval {
+                // Skip this scan (debounce)
+                return
+            }
+            
+            // Update scan tracking
+            lastScannedCode = stringValue
+            lastScanTime = currentTime
+            
+            // Notify listener of barcode detection
+            onBarcodeDetected?(stringValue)
+            
+            // Optional: Provide haptic feedback
+            provideHapticFeedback()
         }
-        
-        // Update scan tracking
-        lastScannedCode = stringValue
-        lastScanTime = currentTime
-        
-        // Notify listener of barcode detection
-        onBarcodeDetected?(stringValue)
-        
-        // Optional: Provide haptic feedback
-        provideHapticFeedback()
     }
 }
 
 // MARK: - Errors
 
 /// Errors that can occur during barcode scanning and product lookup
-enum BarcodeServiceError: Error {
+enum BarcodeServiceError: Error, Sendable {
     case invalidURL
     case invalidResponse
     case requestFailed(statusCode: Int)

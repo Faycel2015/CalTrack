@@ -10,6 +10,7 @@ import SwiftData
 import Combine
 import SwiftUI
 
+@MainActor
 @Observable
 class MealViewModel {
     // MARK: - Properties
@@ -184,14 +185,14 @@ class MealViewModel {
     
     // MARK: - Food Item Operations
     
-    func searchFoods() {
+    func searchFoods() async {
         if searchQuery.isEmpty {
             searchResults = []
             return
         }
         
         // First search local database
-        searchResults = FoodDatabase.shared.searchFoods(query: searchQuery)
+        searchResults = await FoodDatabase.shared.searchFoods(query: searchQuery)
         
         // TODO: Add API search for more foods if needed
     }

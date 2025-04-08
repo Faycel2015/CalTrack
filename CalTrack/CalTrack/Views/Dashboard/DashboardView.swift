@@ -11,8 +11,11 @@ import SwiftUI
 // Dashboard View - Shows today's summary
 struct DashboardView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var userProfiles: [UserProfile]
-
+//    @Query private var userProfiles: [UserProfile]
+    @Query(FetchDescriptor<UserProfile>()) private var userProfiles: [UserProfile]
+    @StateObject private var macroTrackingViewModel = MacroTrackingViewModel()
+    @State private var mealViewModel: MealViewModel?
+    
     // States
     @State private var showMacroTracking = false
     @State private var showAddMeal = false
@@ -47,6 +50,13 @@ struct DashboardView: View {
                             showMacroTracking = true
                         }
                     )
+                    .onAppear {
+                        if mealViewModel == nil {
+                            DispatchQueue.main.async {
+                                mealViewModel = MealViewModel(modelContext: modelContext)
+                            }
+                        }
+                    }
 
                     // Meal cards
                     mealSection
@@ -61,15 +71,12 @@ struct DashboardView: View {
             }
             .navigationBarTitle("", displayMode: .inline)
             .navigationBarHidden(true)
-            .sheet(isPresented: $showMacroTracking) {
-                MacroTrackingView()
-            }
+            .sheet(isPresented: $showMacroTracking) { MacroTrackingView() }
             .sheet(isPresented: $showAddMeal) {
-                // This would be replaced with your actual meal adding view
-                Text("Add Meal View")
-                    .font(.title)
-                    .padding()
-            }
+                if let viewModel = mealViewModel { AddMealView(viewModel: viewModel) } }
+            .sheet(isPresented: $showLogWater) { Text("Log Water - Coming Soon").font(.title) }
+            .sheet(isPresented: $showLogExercise) { Text("Log Exercise - Coming Soon").font(.title) }
+            .sheet(isPresented: $showMealSuggestions) { Text("Meal Suggestions - Coming Soon").font(.title) }
         }
     }
 
@@ -275,7 +282,7 @@ struct DashboardView: View {
                         icon: "drop.fill",
                         color: .blue
                     ) {
-                        showLogWater = true
+                        onLogWaterTapped: do { showLogWater = true }
                     }
 
                     quickActionButton(
@@ -283,7 +290,7 @@ struct DashboardView: View {
                         icon: "figure.walk",
                         color: .green
                     ) {
-                        showLogExercise = true
+                        onLogExerciseTapped: do { showLogExercise = true }
                     }
 
                     quickActionButton(
@@ -291,7 +298,7 @@ struct DashboardView: View {
                         icon: "barcode.viewfinder",
                         color: .orange
                     ) {
-                        showAddMeal = true
+                        onFoodScannerTapped: do { showAddMeal = true }
                     }
 
                     quickActionButton(
@@ -299,7 +306,7 @@ struct DashboardView: View {
                         icon: "fork.knife",
                         color: .purple
                     ) {
-                        showMealSuggestions = true
+                        onMealPlanTapped: do { showMealSuggestions = true }
                     }
                 }
                 .padding(.horizontal)

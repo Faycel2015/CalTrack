@@ -10,6 +10,7 @@ import SwiftData
 import Combine
 
 /// View model for the dashboard screen
+@MainActor
 class DashboardViewModel: ObservableObject {
     // MARK: - Services
     
@@ -58,23 +59,20 @@ class DashboardViewModel: ObservableObject {
                 // Load nutrition summary
                 let summary = try await nutritionService.getNutritionSummary(for: selectedDate)
                 
-                // Load recent meals
+                // Load recent meals - since this is synchronous, no await needed
                 let meals = try mealService.getRecentMeals(limit: 5)
                 
                 // Load weekly data
                 let weeklyData = try await loadWeeklyCalorieData()
                 
-                await MainActor.run {
-                    self.nutritionSummary = summary
-                    self.recentMeals = meals
-                    self.weeklyCalorieData = weeklyData
-                    self.isLoading = false
-                }
+                // We're already in a MainActor context
+                self.nutritionSummary = summary
+                self.recentMeals = meals
+                self.weeklyCalorieData = weeklyData
+                self.isLoading = false
             } catch {
-                await MainActor.run {
-                    self.error = AppError.dataError("Failed to load dashboard data: \(error.localizedDescription)")
-                    self.isLoading = false
-                }
+                self.error = AppError.dataError("Failed to load dashboard data: \(error.localizedDescription)")
+                self.isLoading = false
             }
         }
     }
@@ -196,7 +194,7 @@ class DashboardViewModel: ObservableObject {
 // MARK: - Supporting Data Models
 
 /// Daily calorie data for charts
-struct DailyCalorieData: Identifiable {
+struct DailyCalorieData: Identifiable, Sendable {
     let id = UUID()
     let date: Date
     let calories: Double

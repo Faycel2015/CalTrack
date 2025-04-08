@@ -14,9 +14,78 @@ class NutritionService {
     private let userRepository: UserRepository
     private let mealRepository: MealRepository
     
+    // Cache for nutrition data
+    private var cachedDailySummaries: [Date: NutritionSummary] = [:]
+    private var cachedWeeklySummary: WeeklyNutritionSummary?
+    private var lastRefreshDate: Date?
+    
     init(userRepository: UserRepository, mealRepository: MealRepository) {
         self.userRepository = userRepository
         self.mealRepository = mealRepository
+    }
+    
+    // MARK: - Data Loading and Caching
+    
+    /// Load cached nutrition data
+    func loadCachedData() async throws {
+        // Get today's date
+        let today = Date()
+        
+        // Load today's nutrition data
+        let todaySummary = try await getNutritionSummary(for: today)
+        cachedDailySummaries[today] = todaySummary
+        
+        // Load weekly data
+        let weeklySummary = try await getWeeklyNutritionSummary(endDate: today)
+        cachedWeeklySummary = weeklySummary
+        
+        // Store last refresh time
+        lastRefreshDate = Date()
+    }
+    
+    /// Refresh nutrition data
+    func refreshData() async throws {
+        // Clear cache
+        cachedDailySummaries.removeAll()
+        cachedWeeklySummary = nil
+        
+        // Reload data
+        try await loadCachedData()
+    }
+    
+    /// Get cached nutrition summary or fetch new one
+    func getCachedNutritionSummary(for date: Date) async throws -> NutritionSummary {
+        // Check if we have a cached version for this date
+        if let cachedSummary = cachedDailySummaries[date] {
+            return cachedSummary
+        }
+        
+        // Fetch fresh data
+        let summary = try await getNutritionSummary(for: date)
+        
+        // Cache the result
+        cachedDailySummaries[date] = summary
+        
+        return summary
+    }
+    
+    /// Get cached weekly summary or fetch new one
+    func getCachedWeeklySummary(endDate: Date = Date()) async throws -> WeeklyNutritionSummary {
+        // Check if we have a cached version that's not too old
+        if let cachedSummary = cachedWeeklySummary,
+           let lastRefresh = lastRefreshDate,
+           Calendar.current.isDate(endDate, inSameDayAs: cachedSummary.endDate),
+           Calendar.current.dateComponents([.hour], from: lastRefresh, to: Date()).hour! < 1 {
+            return cachedSummary
+        }
+        
+        // Fetch fresh data
+        let summary = try await getWeeklyNutritionSummary(endDate: endDate)
+        
+        // Cache the result
+        cachedWeeklySummary = summary
+        
+        return summary
     }
     
     // MARK: - Daily Nutrition Analysis
@@ -306,6 +375,7 @@ struct MealRecommendation {
 enum NutritionServiceError: Error {
     case userProfileNotFound
     case failedToCalculateNutrition(String)
+    case cachingError(String)
     
     var errorDescription: String {
         switch self {
@@ -313,6 +383,8 @@ enum NutritionServiceError: Error {
             return "User profile not found. Please complete your profile setup."
         case .failedToCalculateNutrition(let reason):
             return "Failed to calculate nutrition: \(reason)"
+        case .cachingError(let reason):
+            return "Error caching nutrition data: \(reason)"
         }
     }
 }

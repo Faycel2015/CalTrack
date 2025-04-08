@@ -10,6 +10,7 @@ import SwiftData
 import Combine
 
 /// View model for food item detail screen
+@MainActor // Add MainActor to the entire class
 class FoodDetailViewModel: ObservableObject {
     // MARK: - Services
     
@@ -130,9 +131,13 @@ class FoodDetailViewModel: ObservableObject {
     
     // MARK: - Initializer
     
-    init(foodItem: FoodItem) {
-        // Get services from service locator
-        self.foodRepository = AppServices.shared.getFoodRepository()
+    init(foodItem: FoodItem, foodRepository: FoodRepository? = nil) {
+        // Get services from service locator or use the provided one
+        if let foodRepository = foodRepository {
+            self.foodRepository = foodRepository
+        } else {
+            self.foodRepository = AppServices.shared.getFoodRepository()
+        }
         
         // Store original food item for comparison
         self.originalFoodItem = foodItem
@@ -309,33 +314,29 @@ class FoodDetailViewModel: ObservableObject {
             do {
                 try foodRepository.updateFoodItem(foodItem)
                 
-                await MainActor.run {
-                    isLoading = false
-                    onSave?(foodItem)
-                }
+                // No need for MainActor.run since the class is already @MainActor
+                isLoading = false
+                onSave?(foodItem)
             } catch {
-                await MainActor.run {
-                    self.error = AppError.dataError("Failed to save food item: \(error.localizedDescription)")
-                    self.isLoading = false
-                }
+                // No need for MainActor.run since the class is already @MainActor
+                self.error = AppError.dataError("Failed to save food item: \(error.localizedDescription)")
+                self.isLoading = false
             }
         }
     }
-    
+
     /// Update favorite status in repository
     private func updateFavoriteStatus() {
         Task {
             do {
                 let newStatus = try foodRepository.toggleFavorite(for: foodItem)
                 
-                await MainActor.run {
-                    self.foodItem.isFavorite = newStatus
-                    self.isFavorite = newStatus
-                }
+                // No need for MainActor.run since the class is already @MainActor
+                self.foodItem.isFavorite = newStatus
+                self.isFavorite = newStatus
             } catch {
-                await MainActor.run {
-                    self.error = AppError.dataError("Failed to update favorite status: \(error.localizedDescription)")
-                }
+                // No need for MainActor.run since the class is already @MainActor
+                self.error = AppError.dataError("Failed to update favorite status: \(error.localizedDescription)")
             }
         }
     }

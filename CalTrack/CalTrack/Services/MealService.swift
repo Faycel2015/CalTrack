@@ -6,8 +6,10 @@
 //
 
 import Foundation
+import SwiftData
 
 /// Service class that coordinates meal-related operations
+@MainActor
 class MealService {
     private let mealRepository: MealRepository
     private let foodRepository: FoodRepository
@@ -262,8 +264,8 @@ class MealService {
     /// Search for food items
     /// - Parameter query: The search query
     /// - Returns: Array of matching food items
-    func searchFoodItems(_ query: String) throws -> [FoodItem] {
-        return try foodRepository.searchFoodItems(query)
+    func searchFoodItems(_ query: String) async throws -> [FoodItem] {
+        return try await foodRepository.searchFoodItems(query)
     }
     
     /// Get favorite food items
@@ -297,7 +299,7 @@ class MealService {
 // MARK: - Data Models
 
 /// Additional nutrition information for food items
-struct AdditionalNutrition {
+struct AdditionalNutrition: Sendable {
     let sugar: Double?
     let fiber: Double?
     let sodium: Double?
@@ -308,10 +310,10 @@ struct AdditionalNutrition {
 
 // MARK: - Errors
 
-enum MealServiceError: Error {
+enum MealServiceError: Error, Sendable {
     case invalidMealData(String)
     case invalidFoodItemData(String)
-    case failedToSave(Error)
+    case failedToSave(String)
     
     var errorDescription: String {
         switch self {
@@ -319,8 +321,52 @@ enum MealServiceError: Error {
             return "Invalid meal data: \(reason)"
         case .invalidFoodItemData(let reason):
             return "Invalid food item data: \(reason)"
-        case .failedToSave(let error):
-            return "Failed to save: \(error.localizedDescription)"
+        case .failedToSave(let errorMessage):
+            return "Failed to save: \(errorMessage)"
         }
+    }
+}
+
+extension MealService {
+    func generateAIMealSuggestion(
+        remainingMacros: (calories: Double, carbs: Double, protein: Double, fat: Double),
+        mealType: MealType
+    ) async throws -> Meal {
+        let geminiService = AppServices.shared.getGeminiService()
+        
+        // Get dietary preferences (this would ideally come from user settings)
+        let preferences = DietaryPreferences.empty
+        
+        // Generate AI meal suggestions
+        let suggestions = try await geminiService.generateMealSuggestions(
+            remainingMacros: remainingMacros,
+            preferences: preferences,
+            mealType: mealType
+        )
+        
+        // Take the first suggestion
+        guard let firstSuggestion = suggestions.first else {
+            throw MealServiceError.invalidMealData("No AI suggestions available")
+        }
+        
+        // Create food items from suggestion
+        let foodItems = try firstSuggestion.ingredients.map { ingredientName in
+            try createCustomFoodItem(
+                name: ingredientName,
+                servingSize: "1 serving",
+                calories: firstSuggestion.nutrition.calories / Double(firstSuggestion.ingredients.count),
+                carbs: firstSuggestion.nutrition.carbs / Double(firstSuggestion.ingredients.count),
+                protein: firstSuggestion.nutrition.protein / Double(firstSuggestion.ingredients.count),
+                fat: firstSuggestion.nutrition.fat / Double(firstSuggestion.ingredients.count)
+            )
+        }
+        
+        // Create and return the meal
+        return try createMeal(
+            name: firstSuggestion.name,
+            date: Date(),
+            mealType: mealType,
+            foodItems: foodItems
+        )
     }
 }
