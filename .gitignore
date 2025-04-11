@@ -35,6 +35,9 @@ playground.xcworkspace
 # This file contains sensitive API keys and shouldn't be committed
 ApiConfig.plist
 
+# API Key Configuration
+CalTrack/CalTrack/Resources/ApiConfig.plist
+
 # CocoaPods
 #
 # We recommend against adding the Pods directory to your .gitignore. However
