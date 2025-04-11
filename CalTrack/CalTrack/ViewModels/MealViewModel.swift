@@ -191,8 +191,19 @@ class MealViewModel {
             return
         }
         
+        // First search local database - ensure this runs on the main actor
+        let query = self.searchQuery // Capture the value to avoid race conditions
+        
+        // Access FoodDatabase (which is an actor) correctly with await
+        let results = await FoodDatabase.shared.searchFoods(query: query)
+        
         // First search local database
-        searchResults = await FoodDatabase.shared.searchFoods(query: searchQuery)
+//        searchResults = await FoodDatabase.shared.searchFoods(query: searchQuery)
+        
+        // Update UI state on the main actor
+        await MainActor.run {
+            self.searchResults = results
+        }
         
         // TODO: Add API search for more foods if needed
     }

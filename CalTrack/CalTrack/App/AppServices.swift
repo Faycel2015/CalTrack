@@ -123,7 +123,7 @@ class AppServices {
         }
 
         return GeminiService(
-            apiKey: "AIzaSyCohNfolfRyfvZwLgiLe7Kx2sRGM1iuLL0",
+            apiKey: APIConfig.shared.geminiAPIKey,
             nutritionService: nutritionService
         )
     }
@@ -131,7 +131,7 @@ class AppServices {
 
 extension AppServices {
     func getUserProfileService() -> UserProfileService {
-        guard let userRepository = userRepository else {
+        guard let userRepository = self.userRepository else {
             fatalError("UserRepository not initialized. Call initialize(with:) first.")
         }
 

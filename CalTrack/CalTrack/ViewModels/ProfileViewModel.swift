@@ -8,6 +8,7 @@
 import Combine
 import Foundation
 import SwiftData
+import UIKit
 
 /// View model for user profile screen
 @MainActor // Add MainActor to the entire class
@@ -26,10 +27,12 @@ class ProfileViewModel: ObservableObject {
 
     // User profile data
     @Published var userProfile: UserProfile?
+    @Published var profileImage: UIImage?
 
     // Edit state
     @Published var isEditing: Bool = false
     @Published var showOnboarding: Bool = false
+    @Published var showHelpAndSupport: Bool = false
 
     // Weight tracking
     @Published var weightHistory: [WeightEntry] = []
@@ -189,6 +192,11 @@ class ProfileViewModel: ObservableObject {
             self.error = AppError.dataError("Failed to clear data: \(error.localizedDescription)")
             isLoading = false
         }
+    }
+    
+    /// Show settings
+    func HelpAndSupportView() {
+        showHelpAndSupport = true
     }
 
     // MARK: - Private Methods

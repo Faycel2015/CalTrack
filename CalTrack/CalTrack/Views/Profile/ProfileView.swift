@@ -12,6 +12,10 @@ struct ProfileView: View {
     @Environment(\.modelContext) var modelContext
     @StateObject private var viewModel = ProfileViewModel()
     @EnvironmentObject private var appState: AppState
+    @State private var showImagePicker = false
+    @State private var showActionSheet = false
+    @State private var showHelpAndSupport = false
+    @State private var inputImage: UIImage?
     
     var body: some View {
         NavigationView {
@@ -85,7 +89,7 @@ struct ProfileView: View {
         }
         .sheet(isPresented: $viewModel.showOnboarding) {
             OnboardingView(
-                modelContext: modelContext, // This now works since modelContext is not private
+                modelContext: modelContext,
                 onComplete: {
                     viewModel.loadUserProfile()
                 }
@@ -111,14 +115,41 @@ struct ProfileView: View {
     private var profileHeader: some View {
         VStack(spacing: 15) {
             // Profile image
-            ZStack {
-                Circle()
-                    .fill(Color.accentColor.opacity(0.2))
-                    .frame(width: 100, height: 100)
-                
-                Text(viewModel.userProfile?.name.prefix(1).uppercased() ?? "?")
-                    .font(.system(size: 40, weight: .bold))
-                    .foregroundColor(.accentColor)
+            Button(action: {
+                showActionSheet = true
+            }) {
+                if let profileImage = viewModel.profileImage {
+                    Image(uiImage: profileImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 100, height: 100)
+                        .clipShape(Circle())
+                        .overlay(
+                            Circle()
+                                .stroke(Color.accentColor, lineWidth: 2)
+                        )
+                } else {
+                    ZStack {
+                        Circle()
+                            .fill(Color.accentColor.opacity(0.2))
+                            .frame(width: 100, height: 100)
+                        
+                        Text(viewModel.userProfile?.name.prefix(1).uppercased() ?? "?")
+                            .font(.system(size: 40, weight: .bold))
+                            .foregroundColor(.accentColor)
+                        
+                        // Camera icon for adding photo
+                        Circle()
+                            .fill(Color.accentColor)
+                            .frame(width: 30, height: 30)
+                            .overlay(
+                                Image(systemName: "camera.fill")
+                                    .font(.system(size: 15))
+                                    .foregroundColor(.white)
+                            )
+                            .offset(x: 35, y: 35)
+                    }
+                }
             }
             
             // Name
@@ -140,6 +171,35 @@ struct ProfileView: View {
                 .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
         )
         .padding(.horizontal)
+        .actionSheet(isPresented: $showActionSheet) {
+            ActionSheet(
+                title: Text("Change Profile Picture"),
+                buttons: [
+                    .default(Text("Take Photo")) {
+                        showImagePicker = true
+                        // Set source type to camera
+                    },
+                    .default(Text("Choose From Library")) {
+                        showImagePicker = true
+                        // Set source type to library
+                    },
+                    .destructive(Text("Remove Photo")) {
+                        viewModel.profileImage = nil
+                        // Save this change
+                    },
+                    .cancel()
+                ]
+            )
+        }
+        .sheet(isPresented: $showImagePicker) {
+            ImagePicker(image: $inputImage)
+                .onDisappear {
+                    if let inputImage = inputImage {
+                        viewModel.profileImage = inputImage
+                        // Save this change
+                    }
+                }
+        }
     }
     
     // MARK: - Metrics Card
@@ -406,6 +466,7 @@ struct ProfileView: View {
             
             Button(action: {
                 // Open help
+                viewModel.HelpAndSupportView()
             }) {
                 HStack {
                     Image(systemName: "questionmark.circle")
@@ -426,6 +487,9 @@ struct ProfileView: View {
                         .fill(Color(.systemGray6))
                 )
             }
+        }
+        .sheet(isPresented: $viewModel.showHelpAndSupport) {
+            HelpAndSupportView()
         }
         .padding()
         .background(
@@ -697,6 +761,43 @@ struct ProfileView: View {
         .frame(maxWidth: .infinity)
         .padding()
     }
+}
+
+struct ImagePicker: UIViewControllerRepresentable {
+    @Environment(\.presentationMode) var presentationMode
+    @Binding var image: UIImage?
+    
+    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+        let parent: ImagePicker
+        
+        init(_ parent: ImagePicker) {
+            self.parent = parent
+        }
+        
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+            if let uiImage = info[.originalImage] as? UIImage {
+                parent.image = uiImage
+            }
+            
+            parent.presentationMode.wrappedValue.dismiss()
+        }
+        
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            parent.presentationMode.wrappedValue.dismiss()
+        }
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.delegate = context.coordinator
+        return picker
+    }
+    
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
 }
 
 #Preview {

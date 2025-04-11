@@ -67,6 +67,16 @@
     "%lld" : {
 
     },
+    "%lld / %lld ml" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld / %2$lld ml"
+          }
+        }
+      }
+    },
     "%lld %@" : {
       "localizations" : {
         "en" : {
@@ -91,6 +101,9 @@
       }
     },
     "%lld items" : {
+
+    },
+    "%lld min" : {
 
     },
     "%lld of %lld calories" : {
@@ -131,6 +144,9 @@
           }
         }
       }
+    },
+    "%lld%% of daily goal" : {
+
     },
     "%lld%% of weekly goal" : {
 
@@ -198,6 +214,9 @@
     "Add Weight Entry" : {
 
     },
+    "Adjust Amount" : {
+
+    },
     "Adjust your macronutrient percentages" : {
 
     },
@@ -241,6 +260,9 @@
 
     },
     "Body Metrics" : {
+
+    },
+    "Bug Report View Placeholder" : {
 
     },
     "Build" : {
@@ -314,10 +336,22 @@
     "Carbohydrates: %lld%%" : {
 
     },
+    "Change Profile Picture" : {
+
+    },
     "Choose Date" : {
 
     },
+    "Choose From Library" : {
+
+    },
     "Clear All Data" : {
+
+    },
+    "Close" : {
+
+    },
+    "Community Forum" : {
 
     },
     "Contact" : {
@@ -333,6 +367,9 @@
 
     },
     "Custom Accent Color" : {
+
+    },
+    "Custom Amount" : {
 
     },
     "Daily Calorie Goal" : {
@@ -395,6 +432,12 @@
     "Done" : {
 
     },
+    "Duration & Intensity" : {
+
+    },
+    "Duration: %lld minutes" : {
+
+    },
     "Edit" : {
 
     },
@@ -437,6 +480,18 @@
     "Error: %@" : {
 
     },
+    "Estimated Calories Burned" : {
+
+    },
+    "Exercise Details" : {
+
+    },
+    "Exercise Logged" : {
+
+    },
+    "Exercise Type" : {
+
+    },
     "Export My Data" : {
 
     },
@@ -447,6 +502,9 @@
 
     },
     "F: %lldg" : {
+
+    },
+    "FAQs" : {
 
     },
     "Fat: %lld%%" : {
@@ -481,6 +539,9 @@
     },
     "Get Started" : {
       "comment" : "Button to begin using the app"
+    },
+    "Getting Started" : {
+
     },
     "Goal" : {
 
@@ -527,6 +588,9 @@
     "Insights" : {
 
     },
+    "Intensity" : {
+
+    },
     "kg" : {
 
     },
@@ -534,6 +598,9 @@
 
     },
     "Loading profile..." : {
+
+    },
+    "Log Exercise" : {
 
     },
     "Log Exercise - Coming Soon" : {
@@ -611,6 +678,12 @@
     "No results found" : {
 
     },
+    "No Water Logged Today" : {
+
+    },
+    "Notes (Optional)" : {
+
+    },
     "Nutrition" : {
 
     },
@@ -649,6 +722,9 @@
       "comment" : "Confirmation button"
     },
     "Oldest First" : {
+
+    },
+    "Online Help Center" : {
 
     },
     "Open Settings" : {
@@ -735,10 +811,28 @@
     "Remove from Favorites" : {
 
     },
+    "Remove Photo" : {
+
+    },
+    "Report a Bug" : {
+
+    },
+    "Reset App Data" : {
+
+    },
+    "Reset Data View Placeholder" : {
+
+    },
+    "Resources" : {
+
+    },
     "Save" : {
 
     },
     "Save Entry" : {
+
+    },
+    "Save Exercise" : {
 
     },
     "Save Weight" : {
@@ -792,16 +886,45 @@
     "Start Tracking" : {
 
     },
+    "Start tracking your water intake" : {
+
+    },
     "Statistics" : {
 
     },
+    "Successfully added %@ for %lld minutes." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Successfully added %1$@ for %2$lld minutes."
+          }
+        }
+      }
+    },
+    "Successfully logged %lld %@ of water." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Successfully logged %1$lld %2$@ of water."
+          }
+        }
+      }
+    },
     "Suggested Categories" : {
+
+    },
+    "Support" : {
 
     },
     "support@caltrack.app" : {
 
     },
     "System Default" : {
+
+    },
+    "Take Photo" : {
 
     },
     "Tap for details" : {
@@ -822,10 +945,19 @@
     "This helps us calculate your nutritional needs more accurately" : {
 
     },
+    "This Week" : {
+
+    },
     "Time Range" : {
 
     },
+    "Today's Entries" : {
+
+    },
     "Today's Meals" : {
+
+    },
+    "Today's Progress" : {
 
     },
     "Total: %lld%%" : {
@@ -866,10 +998,19 @@
     "Tracking Features" : {
 
     },
+    "Tracking Meals" : {
+
+    },
+    "Troubleshooting" : {
+
+    },
     "Try Again" : {
 
     },
     "Try different keywords or check your spelling" : {
+
+    },
+    "Unit" : {
 
     },
     "Use Accent Color" : {
@@ -882,6 +1023,12 @@
 
     },
     "View Full Details" : {
+
+    },
+    "Water Added" : {
+
+    },
+    "Water Tracking" : {
 
     },
     "We use industry-standard encryption to protect your personal information." : {
@@ -981,6 +1128,9 @@
 
     },
     "Your Results" : {
+
+    },
+    "YouTube Tutorials" : {
 
     }
   },

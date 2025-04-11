@@ -34,7 +34,7 @@ struct CalTrackApp: App {
     var body: some Scene {
         WindowGroup {
             MainView()
-                .preferredColorScheme(appState.colorScheme) // Dynamically apply theme
+                .preferredColorScheme(appState.colorScheme ?? nil)
                 .environmentObject(appState)
                 .onAppear {
                     AppServices.shared.initialize(with: modelContainer.mainContext)

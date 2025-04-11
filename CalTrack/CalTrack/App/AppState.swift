@@ -166,17 +166,25 @@ class AppState: ObservableObject {
             }
         }
         
-        // Load color scheme
+        // Load color scheme with system default as fallback
         if let schemeString = userDefaults.string(forKey: "colorScheme") {
             colorScheme = schemeString == "dark" ? .dark : .light
         }
     }
+    
+    // Optional: Persist color scheme preference
+    private func saveColorSchemePreference() {
+        UserDefaults.standard.set(
+            colorScheme == .dark ? "dark" : (colorScheme == .light ? "light" : "system"),
+            forKey: "AppColorScheme"
+        )
+    }
 }
 
-// MARK: - Error Handling
+// MARK: - Feature Flags
 
-/// Application error types
-enum AppError: Error, Identifiable {
+/// Application error handling
+public enum AppError: Error, Identifiable {
     case dataError(String)
     case networkError(String)
     case userError(String)
@@ -185,7 +193,7 @@ enum AppError: Error, Identifiable {
     case unknown(String)
     case initializationError(String)
     
-    var id: String {
+    public var id: String {
         switch self {
         case .dataError(let message): return "data_\(message.hashValue)"
         case .networkError(let message): return "network_\(message.hashValue)"
@@ -197,7 +205,7 @@ enum AppError: Error, Identifiable {
         }
     }
     
-    var message: String {
+    public var message: String {
         switch self {
         case .dataError(let message):
             return "Data Error: \(message)"
@@ -216,8 +224,6 @@ enum AppError: Error, Identifiable {
         }
     }
 }
-
-// MARK: - Feature Flags
 
 /// Application feature flags
 enum AppFeature: String, CaseIterable, Identifiable {
