@@ -33,9 +33,6 @@ playground.xcworkspace
 
 # API Key Configuration
 # This file contains sensitive API keys and shouldn't be committed
-ApiConfig.plist
-
-# API Key Configuration
 CalTrack/CalTrack/Resources/ApiConfig.plist
 
 # CocoaPods
