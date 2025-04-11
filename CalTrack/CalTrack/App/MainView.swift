@@ -45,13 +45,17 @@ struct MainView: View {
             )
         }
         .alert(item: $appState.globalError) { error in
-            Alert(
-                title: Text("Error"),
-                message: Text(error.message),
-                dismissButton: .default(Text("OK")) {
-                    appState.clearError()
-                }
-            )
+            if !appState.showOnboarding {
+                return Alert(
+                    title: Text("Error"),
+                    message: Text(error.message),
+                    dismissButton: .default(Text("OK")) {
+                        appState.clearError()
+                    }
+                )
+            } else {
+                return Alert(title: Text(""), message: Text(""), dismissButton: .default(Text("OK")))
+            }
         }
         // Handle app lifecycle events
         .onChange(of: scenePhase) { oldPhase, newPhase in
@@ -68,13 +72,13 @@ struct MainView: View {
     @MainActor
     private func initializeViewModel() async {
         // Add a slight delay to show the splash screen
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
+        try? await Task.sleep(nanoseconds: 1_000_000_000) // keep splash for 1 second
         
-        // Initialize the main view model
-        mainViewModel = MainViewModel(
-            modelContext: modelContext,
-            appState: appState
-        )
+        // Initialize the main view model after services are initialized
+        await MainActor.run {
+            AppServices.shared.initialize(with: modelContext)
+            mainViewModel = MainViewModel(modelContext: modelContext, appState: appState)
+        }
     }
 }
 

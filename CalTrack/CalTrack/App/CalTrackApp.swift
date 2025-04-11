@@ -37,6 +37,7 @@ struct CalTrackApp: App {
                 .preferredColorScheme(appState.colorScheme ?? nil)
                 .environmentObject(appState)
                 .onAppear {
+                    // Initialize AppServices with the correct modelContext
                     AppServices.shared.initialize(with: modelContainer.mainContext)
                     
                     // Set default features if not already set
@@ -74,3 +75,4 @@ struct CalTrackApp: App {
         }
     }
 }
+
